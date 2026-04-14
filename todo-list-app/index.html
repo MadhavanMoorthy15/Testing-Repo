@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Tasks - Todo List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Today's Tasks</h1>
+            <p class="subtitle">Stay organized and get things done</p>
+        </header>
+
+        <div class="todo-input-section">
+            <form id="todoForm" class="todo-form">
+                <input 
+                    type="text" 
+                    id="taskInput" 
+                    class="task-input" 
+                    placeholder="What needs to be done today?"
+                    aria-label="New task input"
+                    autocomplete="off"
+                >
+                <button type="submit" class="add-button" aria-label="Add task">
+                    <span>Add Task</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="todo-list-section">
+            <ul id="todoList" class="todo-list" role="list">
+                <!-- Tasks will be dynamically added here -->
+            </ul>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <p>No tasks yet. Add one above to get started!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
