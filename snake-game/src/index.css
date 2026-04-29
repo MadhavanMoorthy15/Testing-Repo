@@ -1,0 +1,35 @@
+/* ── Global Reset & Retro Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:          #0a0f0a;
+  --surface:     #0d1f0d;
+  --border:      #1a4d1a;
+  --green-dim:   #1d6b1d;
+  --green:       #39ff14;
+  --green-glow:  #39ff1488;
+  --green-light: #a8ff80;
+  --amber:       #ffb700;
+  --red:         #ff2d2d;
+  --grid-line:   #0e200e;
+  --cell:        24px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--green);
+  font-family: 'Courier New', Courier, monospace;
+  -webkit-font-smoothing: none;
+  image-rendering: pixelated;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
