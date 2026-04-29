@@ -1,0 +1,336 @@
+/* ═══════════════════════════════════════════
+   RETRO SNAKE — App Styles
+   ═══════════════════════════════════════════ */
+
+/* ── Layout ── */
+.app {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 8px 24px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+/* CRT Scanlines */
+.scanlines {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+}
+
+/* ── Header ── */
+.app-header {
+  margin-top: 8px;
+}
+
+.game-title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--green);
+  text-shadow:
+    0 0 6px var(--green),
+    0 0 18px var(--green-glow),
+    0 0 40px var(--green-glow);
+  animation: flicker 8s infinite;
+}
+
+.title-snake {
+  font-size: 0.85em;
+  filter: drop-shadow(0 0 6px var(--green));
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.85; }
+}
+
+/* ── Scoreboard ── */
+.scoreboard {
+  display: flex;
+  gap: 32px;
+  border: 2px solid var(--border);
+  padding: 8px 24px;
+  background: var(--surface);
+  box-shadow: 0 0 12px var(--green-glow) inset;
+}
+
+.score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.score-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--green-dim);
+  text-transform: uppercase;
+}
+
+.score-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 8px var(--green-glow);
+  letter-spacing: 0.1em;
+}
+
+/* ── Board ── */
+.board-wrapper {
+  position: relative;
+  border: 3px solid var(--green-dim);
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 18px var(--green-glow),
+    0 0 40px rgba(57, 255, 20, 0.15);
+  background: var(--surface);
+}
+
+.game-board {
+  position: relative;
+  /* Pixel grid background */
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+}
+
+/* ── Cells ── */
+.cell {
+  position: absolute;
+  border-radius: 2px;
+}
+
+/* Food — pulsing red dot */
+.cell.food {
+  background: var(--red);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--red), 0 0 14px #ff2d2d88;
+  animation: pulse-food 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-food {
+  from { transform: scale(0.75); }
+  to   { transform: scale(0.95); }
+}
+
+/* Snake body */
+.cell.snake-segment {
+  background: var(--green-light);
+  border: 1px solid var(--green-dim);
+  border-radius: 3px;
+}
+
+/* Head — brighter + glow */
+.cell.snake-head {
+  background: var(--green);
+  border: 1px solid var(--green);
+  border-radius: 4px;
+  box-shadow: 0 0 8px var(--green), 0 0 18px var(--green-glow);
+  z-index: 2;
+}
+
+/* Tail — slightly dimmer */
+.cell.snake-tail {
+  background: #3a8c2a;
+  opacity: 0.8;
+}
+
+/* ── Overlays ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(10, 15, 10, 0.88);
+  backdrop-filter: blur(1px);
+  z-index: 10;
+}
+
+.overlay-title {
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green), 0 0 30px var(--green-glow);
+  text-transform: uppercase;
+}
+
+.overlay-title.game-over-text {
+  color: var(--red);
+  text-shadow: 0 0 10px var(--red), 0 0 30px #ff2d2d88;
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+.overlay-sub {
+  font-size: 0.8rem;
+  color: var(--green-dim);
+  letter-spacing: 0.15em;
+}
+
+.overlay-score {
+  font-size: 1.2rem;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+}
+
+.overlay-hi {
+  font-size: 0.85rem;
+  color: var(--amber);
+  text-shadow: 0 0 8px var(--amber);
+  letter-spacing: 0.1em;
+}
+
+/* ── Buttons ── */
+.btn-primary,
+.btn-secondary,
+.btn-control {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all 0.1s;
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #000;
+  padding: 10px 28px;
+  font-size: 1rem;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  box-shadow: 0 0 10px var(--green-glow);
+}
+
+.btn-primary:hover {
+  background: var(--green-light);
+  box-shadow: 0 0 20px var(--green);
+  transform: scale(1.04);
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--green-dim);
+  padding: 8px 22px;
+  font-size: 0.85rem;
+  border: 1px solid var(--green-dim);
+}
+
+.btn-secondary:hover {
+  color: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 0 8px var(--green-glow);
+}
+
+.btn-control {
+  background: transparent;
+  color: var(--green-dim);
+  padding: 6px 18px;
+  font-size: 0.78rem;
+  border: 1px solid var(--border);
+}
+
+.btn-control:hover {
+  color: var(--green);
+  border-color: var(--green-dim);
+}
+
+/* ── Controls Bar ── */
+.controls-bar {
+  display: flex;
+  gap: 12px;
+  min-height: 36px;
+  align-items: center;
+}
+
+/* ── D-Pad (mobile) ── */
+.dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-top: 4px;
+}
+
+.dpad-middle {
+  display: flex;
+  align-items: center;
+}
+
+.dpad-center {
+  width: 44px;
+  height: 44px;
+  background: #0d1f0d;
+  border: 1px solid var(--border);
+}
+
+.dpad-btn {
+  width: 44px;
+  height: 44px;
+  background: var(--surface);
+  color: var(--green);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.dpad-btn:active,
+.dpad-btn:focus {
+  background: var(--green-dim);
+  color: #000;
+  outline: none;
+}
+
+/* ── Footer ── */
+.app-footer {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #1a4d1a;
+  text-align: center;
+  padding-top: 4px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 520px) {
+  :root { --cell: 18px; }
+
+  .scoreboard { gap: 20px; padding: 6px 14px; }
+  .score-value { font-size: 1.2rem; }
+  .app-footer { display: none; }
+}
