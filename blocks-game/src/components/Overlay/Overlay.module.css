@@ -1,0 +1,242 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 20, 0.88);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  z-index: 10;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 24px;
+  max-width: 300px;
+  width: 90%;
+}
+
+/* ── Logo ── */
+.logo {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.logo span {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  font-weight: 900;
+  display: inline-block;
+  animation: bounce 0.8s ease infinite alternate;
+}
+
+.logoB { color: #00f5ff; animation-delay: 0.0s; }
+.logoL { color: #0066ff; animation-delay: 0.1s; }
+.logoO { color: #bf00ff; animation-delay: 0.2s; }
+.logoC { color: #ff073a; animation-delay: 0.3s; }
+.logoK { color: #ffd700; animation-delay: 0.4s; }
+.logoS { color: #39ff14; animation-delay: 0.5s; }
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-6px); }
+}
+
+.subtitle {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: #5a5a8a;
+  text-transform: uppercase;
+  margin-top: -8px;
+}
+
+/* ── Keyboard hints ── */
+.keysHint {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #1e1e3e;
+  border-radius: 8px;
+  padding: 10px 14px;
+  width: 100%;
+}
+
+.keyHint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.keys {
+  display: flex;
+  gap: 4px;
+}
+
+.key {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  background: #1a1a2e;
+  border: 1px solid #3a3a5c;
+  border-bottom: 2px solid #0a0a1a;
+  border-radius: 4px;
+  padding: 3px 6px;
+  color: #a0c4ff;
+  white-space: nowrap;
+}
+
+.keyAction {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.5rem;
+  color: #6a6a9a;
+  letter-spacing: 0.08em;
+}
+
+/* ── Titles ── */
+.title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: #a0c4ff;
+  text-align: center;
+}
+
+.gameOverTitle {
+  color: #ff073a;
+  text-shadow: 0 0 20px rgba(255, 7, 58, 0.6);
+  animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+  0%, 95%, 100% { transform: skewX(0); text-shadow: 0 0 20px rgba(255, 7, 58, 0.6); }
+  96%  { transform: skewX(-5deg); text-shadow: -3px 0 #00f5ff, 3px 0 #ff073a; }
+  97%  { transform: skewX(5deg);  text-shadow: 3px 0 #00f5ff, -3px 0 #ff073a; }
+  98%  { transform: skewX(-3deg); }
+  99%  { transform: skewX(0); }
+}
+
+/* ── Final score display ── */
+.finalScores {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #1e1e3e;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.finalScoreRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.finalLabel {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: #5a5a8a;
+}
+
+.finalValue {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.bestValue {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.scoreDisplay {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.9rem;
+  color: #a0c4ff;
+}
+
+.newRecord {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  color: #ffd700;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+  animation: pulse 1s ease infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.7; transform: scale(1); }
+  to   { opacity: 1;   transform: scale(1.05); }
+}
+
+/* ── Buttons ── */
+.btnGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #0055cc, #003399);
+  border: 2px solid #0066ff;
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.3), 0 4px 0 #001155;
+}
+
+.primaryBtn:hover {
+  background: linear-gradient(135deg, #0066ee, #0044bb);
+  box-shadow: 0 0 30px rgba(0, 102, 255, 0.5), 0 4px 0 #001155;
+  transform: translateY(-1px);
+}
+
+.primaryBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.3), 0 1px 0 #001155;
+}
+
+.secondaryBtn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  color: #5a5a8a;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.secondaryBtn:hover {
+  border-color: #4a4a7a;
+  color: #8a8acc;
+  background: rgba(255, 255, 255, 0.03);
+}

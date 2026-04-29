@@ -1,0 +1,74 @@
+.boardWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 2px #2a2a4a,
+    0 0 30px rgba(0, 245, 255, 0.15),
+    inset 0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.board {
+  display: grid;
+  width: 320px;
+  height: 640px;
+  background-color: #0a0a1a;
+  border: 2px solid #2a2a4a;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Base cell */
+.cell {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  position: relative;
+  transition: background-color 0.05s ease;
+}
+
+/* Empty cell — subtle grid lines */
+.empty {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Ghost piece */
+.ghost {
+  background-color: transparent;
+  border: 2px solid var(--cell-color, #fff);
+  opacity: 0.35;
+  border-radius: 2px;
+}
+
+/* Filled (locked) cell */
+.filled {
+  background-color: var(--cell-color, #ccc);
+  border-top: 3px solid color-mix(in srgb, var(--cell-color) 100%, white 40%);
+  border-left: 3px solid color-mix(in srgb, var(--cell-color) 100%, white 30%);
+  border-bottom: 3px solid var(--cell-shadow, #888);
+  border-right: 3px solid var(--cell-shadow, #888);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Active (falling) piece — subtle glow */
+.filled.active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset -1px -1px 0 rgba(0, 0, 0, 0.3),
+    0 0 6px var(--cell-color, transparent);
+}
+
+@media (max-width: 640px) {
+  .board {
+    width: 270px;
+    height: 540px;
+  }
+}
