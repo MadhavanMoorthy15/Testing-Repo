@@ -22,10 +22,9 @@ router.post('/', authenticateToken, (req: AuthRequest, res: Response) => {
   userCart.forEach((quantity, productId) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      // BUG #6: Stock is never decremented when order is placed
-      // This allows overselling and inventory inconsistencies
-      // Should do: product.stock -= quantity
-      
+      // FIX #6: Decrement stock when an order is placed to prevent overselling
+      product.stock -= quantity;
+
       orderItems.push({
         productId: product.id,
         productName: product.name,

@@ -18,12 +18,12 @@ router.post('/register', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // BUG #2: Password is not hashed before storing
-    // This is a critical security vulnerability
+    // FIX #2: Hash password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user: User = {
       id: uuidv4(),
       email,
-      password, // Should be: await bcrypt.hash(password, 10)
+      password: hashedPassword,
       name,
       address,
       phone,
@@ -32,7 +32,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
     users.push(user);
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
       expiresIn: '24h'
     });
 
@@ -64,13 +64,13 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // BUG #3: Password comparison is done with plain text
-    // Since passwords aren't hashed, this creates a security issue
-    if (user.password !== password) {
+    // FIX #3: Use bcrypt to compare hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
       expiresIn: '24h'
     });
 
