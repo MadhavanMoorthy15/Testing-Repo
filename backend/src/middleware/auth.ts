@@ -16,11 +16,18 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   }
 
   try {
-    // BUG: Using hardcoded secret instead of environment variable
-    const decoded = jwt.verify(token, 'hardcoded-secret', { ignoreExpiration: true }) as any;
+    // FIX #1: Use environment variable for JWT secret and enforce token expiration
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return res.status(500).json({ message: 'Server configuration error' });
+    }
+    const decoded = jwt.verify(token, secret) as any;
     req.userId = decoded.userId;
     next();
   } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ message: 'Token expired' });
+    }
     return res.status(403).json({ message: 'Invalid token' });
   }
 };

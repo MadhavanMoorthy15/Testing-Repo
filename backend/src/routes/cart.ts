@@ -31,17 +31,21 @@ router.post('/add', authenticateToken, (req: AuthRequest, res: Response) => {
     return res.status(404).json({ message: 'Product not found' });
   }
   
-  // BUG #5: Stock validation is missing
-  // Users can add unlimited items to cart even if stock is insufficient
-  // Should check: if (quantity > product.stock) return error
-  
+  // FIX #5: Validate that requested quantity does not exceed available stock
+  const currentQuantity = (carts.get(userId) || new Map()).get(productId) || 0;
+  const totalRequested = currentQuantity + quantity;
+  if (totalRequested > product.stock) {
+    return res.status(400).json({
+      message: `Insufficient stock. Only ${product.stock - currentQuantity} unit(s) available.`
+    });
+  }
+
   let userCart = carts.get(userId);
   if (!userCart) {
     userCart = new Map();
     carts.set(userId, userCart);
   }
   
-  const currentQuantity = userCart.get(productId) || 0;
   userCart.set(productId, currentQuantity + quantity);
   
   res.json({ message: 'Item added to cart' });
