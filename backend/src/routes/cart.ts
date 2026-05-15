@@ -31,9 +31,10 @@ router.post('/add', authenticateToken, (req: AuthRequest, res: Response) => {
     return res.status(404).json({ message: 'Product not found' });
   }
   
-  // BUG #5: Stock validation is missing
-  // Users can add unlimited items to cart even if stock is insufficient
-  // Should check: if (quantity > product.stock) return error
+  // Validate quantity and stock availability
+  if (!Number.isFinite(quantity) || quantity <= 0) {
+    return res.status(400).json({ message: 'Quantity must be a positive number' });
+  }
   
   let userCart = carts.get(userId);
   if (!userCart) {
@@ -42,7 +43,11 @@ router.post('/add', authenticateToken, (req: AuthRequest, res: Response) => {
   }
   
   const currentQuantity = userCart.get(productId) || 0;
-  userCart.set(productId, currentQuantity + quantity);
+  const newQuantity = currentQuantity + quantity;
+  if (newQuantity > product.stock) {
+    return res.status(400).json({ message: 'Insufficient stock available' });
+  }
+  userCart.set(productId, newQuantity);
   
   res.json({ message: 'Item added to cart' });
 });
@@ -60,6 +65,13 @@ router.put('/update', authenticateToken, (req: AuthRequest, res: Response) => {
   if (quantity <= 0) {
     userCart.delete(productId);
   } else {
+    const product = products.find(p => p.id === productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    if (quantity > product.stock) {
+      return res.status(400).json({ message: 'Insufficient stock available' });
+    }
     userCart.set(productId, quantity);
   }
   

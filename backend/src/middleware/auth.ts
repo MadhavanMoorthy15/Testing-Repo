@@ -16,8 +16,12 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   }
 
   try {
-    // BUG: Using hardcoded secret instead of environment variable
-    const decoded = jwt.verify(token, 'hardcoded-secret', { ignoreExpiration: true }) as any;
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return res.status(500).json({ message: 'Server misconfigured: JWT secret missing' });
+    }
+    // Verify token normally (respecting expiration)
+    const decoded = jwt.verify(token, secret) as any;
     req.userId = decoded.userId;
     next();
   } catch (error) {

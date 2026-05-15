@@ -58,9 +58,9 @@ router.post('/:id/reviews', authenticateToken, (req: AuthRequest, res: Response)
   
   product.reviews.push(review);
   
-  // BUG #4: Rating calculation is incorrect - doesn't update product rating
-  // Product rating never changes after adding reviews
-  // Should calculate average: product.rating = product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length
+  // Recalculate average rating after adding a review
+  const total = product.reviews.reduce((sum, r) => sum + r.rating, 0);
+  product.rating = Number((total / product.reviews.length).toFixed(2));
   
   res.status(201).json(review);
 });

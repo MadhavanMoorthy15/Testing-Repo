@@ -19,22 +19,28 @@ router.post('/', authenticateToken, (req: AuthRequest, res: Response) => {
   const orderItems: OrderItem[] = [];
   let totalAmount = 0;
   
-  userCart.forEach((quantity, productId) => {
+  // Validate sufficient stock for all items first
+  for (const [productId, quantity] of userCart.entries()) {
     const product = products.find(p => p.id === productId);
-    if (product) {
-      // BUG #6: Stock is never decremented when order is placed
-      // This allows overselling and inventory inconsistencies
-      // Should do: product.stock -= quantity
-      
-      orderItems.push({
-        productId: product.id,
-        productName: product.name,
-        quantity,
-        price: product.price
-      });
-      
-      totalAmount += product.price * quantity;
+    if (!product) {
+      return res.status(404).json({ message: `Product not found: ${productId}` });
     }
+    if (quantity > product.stock) {
+      return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
+    }
+  }
+
+  // Build order items and decrement stock
+  userCart.forEach((quantity, productId) => {
+    const product = products.find(p => p.id === productId)!;
+    orderItems.push({
+      productId: product.id,
+      productName: product.name,
+      quantity,
+      price: product.price
+    });
+    totalAmount += product.price * quantity;
+    product.stock -= quantity; // decrement stock on successful order creation
   });
   
   const order: Order = {

@@ -18,12 +18,12 @@ router.post('/register', async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // BUG #2: Password is not hashed before storing
-    // This is a critical security vulnerability
+    // Hash password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user: User = {
       id: uuidv4(),
       email,
-      password, // Should be: await bcrypt.hash(password, 10)
+      password: hashedPassword,
       name,
       address,
       phone,
@@ -32,9 +32,11 @@ router.post('/register', async (req: Request, res: Response) => {
 
     users.push(user);
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
-      expiresIn: '24h'
-    });
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return res.status(500).json({ message: 'Server misconfigured: JWT secret missing' });
+    }
+    const token = jwt.sign({ userId: user.id }, secret, { expiresIn: '24h' });
 
     const response: AuthResponse = {
       token,
@@ -64,15 +66,17 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // BUG #3: Password comparison is done with plain text
-    // Since passwords aren't hashed, this creates a security issue
-    if (user.password !== password) {
+    // Compare password using bcrypt
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret', {
-      expiresIn: '24h'
-    });
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return res.status(500).json({ message: 'Server misconfigured: JWT secret missing' });
+    }
+    const token = jwt.sign({ userId: user.id }, secret, { expiresIn: '24h' });
 
     const response: AuthResponse = {
       token,
