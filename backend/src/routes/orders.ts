@@ -9,7 +9,7 @@ const router = express.Router();
 // Create order
 router.post('/', authenticateToken, (req: AuthRequest, res: Response) => {
   const userId = req.userId!;
-  const { shippingAddress, paymentMethod } = req.body;
+  const { shippingAddress, paymentMethod } = req.body as { shippingAddress: string; paymentMethod: string };
   
   const userCart = carts.get(userId);
   if (!userCart || userCart.size === 0) {
@@ -18,14 +18,27 @@ router.post('/', authenticateToken, (req: AuthRequest, res: Response) => {
   
   const orderItems: OrderItem[] = [];
   let totalAmount = 0;
+
+  // First pass: validate all items exist and have sufficient stock
+  const insufficient: Array<{ productId: string; requested: number; available: number }> = [];
+  userCart.forEach((quantity, productId) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    if (quantity > product.stock) {
+      insufficient.push({ productId, requested: quantity, available: product.stock });
+    }
+  });
+
+  if (insufficient.length > 0) {
+    return res.status(400).json({ message: 'Insufficient stock for some items', details: insufficient });
+  }
   
+  // Second pass: assemble order items and decrement stock atomically (for this in-memory store)
   userCart.forEach((quantity, productId) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      // BUG #6: Stock is never decremented when order is placed
-      // This allows overselling and inventory inconsistencies
-      // Should do: product.stock -= quantity
-      
+      product.stock -= quantity; // decrement stock now that we've validated
+
       orderItems.push({
         productId: product.id,
         productName: product.name,
@@ -76,7 +89,7 @@ router.get('/:id', authenticateToken, (req: AuthRequest, res: Response) => {
 
 // Update order status (admin functionality - no proper auth check)
 router.patch('/:id/status', authenticateToken, (req: AuthRequest, res: Response) => {
-  const { status } = req.body;
+  const { status } = req.body as { status: Order['status'] };
   const order = orders.find(o => o.id === req.params.id);
   
   if (!order) {

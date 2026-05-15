@@ -40,27 +40,32 @@ router.get('/:id', (req: Request, res: Response) => {
 
 // Add review to product
 router.post('/:id/reviews', authenticateToken, (req: AuthRequest, res: Response) => {
-  const { rating, comment, userName } = req.body;
+  const { rating, comment, userName } = req.body as { rating: number; comment: string; userName: string };
   const product = products.find(p => p.id === req.params.id);
   
   if (!product) {
     return res.status(404).json({ message: 'Product not found' });
+  }
+
+  const normalizedRating = Number(rating);
+  if (!normalizedRating || normalizedRating < 1 || normalizedRating > 5) {
+    return res.status(400).json({ message: 'Rating must be a number between 1 and 5' });
   }
   
   const review: Review = {
     id: uuidv4(),
     userId: req.userId!,
     userName,
-    rating,
+    rating: normalizedRating,
     comment,
     createdAt: new Date()
   };
   
   product.reviews.push(review);
   
-  // BUG #4: Rating calculation is incorrect - doesn't update product rating
-  // Product rating never changes after adding reviews
-  // Should calculate average: product.rating = product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length
+  // Recalculate average rating
+  const total = product.reviews.reduce((sum, r) => sum + r.rating, 0);
+  product.rating = Math.round((total / product.reviews.length) * 10) / 10; // round to 1 decimal
   
   res.status(201).json(review);
 });

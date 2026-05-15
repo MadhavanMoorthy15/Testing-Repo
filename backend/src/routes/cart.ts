@@ -24,16 +24,17 @@ router.get('/', authenticateToken, (req: AuthRequest, res: Response) => {
 // Add to cart
 router.post('/add', authenticateToken, (req: AuthRequest, res: Response) => {
   const userId = req.userId!;
-  const { productId, quantity } = req.body;
+  const { productId, quantity } = req.body as { productId: string; quantity: number };
   
   const product = products.find(p => p.id === productId);
   if (!product) {
     return res.status(404).json({ message: 'Product not found' });
   }
-  
-  // BUG #5: Stock validation is missing
-  // Users can add unlimited items to cart even if stock is insufficient
-  // Should check: if (quantity > product.stock) return error
+
+  const qty = Number(quantity);
+  if (!Number.isInteger(qty) || qty <= 0) {
+    return res.status(400).json({ message: 'Quantity must be a positive integer' });
+  }
   
   let userCart = carts.get(userId);
   if (!userCart) {
@@ -42,7 +43,12 @@ router.post('/add', authenticateToken, (req: AuthRequest, res: Response) => {
   }
   
   const currentQuantity = userCart.get(productId) || 0;
-  userCart.set(productId, currentQuantity + quantity);
+  const newTotal = currentQuantity + qty;
+  if (newTotal > product.stock) {
+    return res.status(400).json({ message: `Insufficient stock. Available: ${product.stock}` });
+  }
+
+  userCart.set(productId, newTotal);
   
   res.json({ message: 'Item added to cart' });
 });
@@ -50,17 +56,30 @@ router.post('/add', authenticateToken, (req: AuthRequest, res: Response) => {
 // Update cart item
 router.put('/update', authenticateToken, (req: AuthRequest, res: Response) => {
   const userId = req.userId!;
-  const { productId, quantity } = req.body;
+  const { productId, quantity } = req.body as { productId: string; quantity: number };
   
   const userCart = carts.get(userId);
   if (!userCart) {
     return res.status(404).json({ message: 'Cart not found' });
   }
+
+  const product = products.find(p => p.id === productId);
+  if (!product) {
+    return res.status(404).json({ message: 'Product not found' });
+  }
   
-  if (quantity <= 0) {
+  const qty = Number(quantity);
+  if (!Number.isInteger(qty)) {
+    return res.status(400).json({ message: 'Quantity must be an integer' });
+  }
+
+  if (qty <= 0) {
     userCart.delete(productId);
   } else {
-    userCart.set(productId, quantity);
+    if (qty > product.stock) {
+      return res.status(400).json({ message: `Insufficient stock. Available: ${product.stock}` });
+    }
+    userCart.set(productId, qty);
   }
   
   res.json({ message: 'Cart updated' });
