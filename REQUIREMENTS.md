@@ -1,6 +1,6 @@
 # Voice Notes Web App - Basic Requirements
 
-**Version:** 1.0  
+**Version:** 3.0.0  
 **Date:** March 27, 2026
 
 ---
