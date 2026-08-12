@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0c10;
+      --surface: #13141a;
+      --border: #242530;
+      --accent: #c8f135;
+      --accent-dim: rgba(200,241,53,0.12);
+      --text: #f0f0f0;
+      --muted: #6b6e7a;
+      --error: #ff5e5e;
+      --radius: 10px;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      padding: 2rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ambient glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse at center, rgba(200,241,53,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.6rem 2.4rem 2.2rem;
+      position: relative;
+      animation: slideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* top accent stripe */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 0 0 4px 4px;
+    }
+
+    .header { margin-bottom: 2rem; }
+
+    .badge {
+      display: inline-block;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,241,53,0.25);
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 0.9rem;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 0.4rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .field {
+      margin-bottom: 1.1rem;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .field:nth-child(1) { animation-delay: 0.08s; }
+    .field:nth-child(2) { animation-delay: 0.14s; }
+    .field:nth-child(3) { animation-delay: 0.20s; }
+    .field:nth-child(4) { animation-delay: 0.26s; }
+    .field:nth-child(5) { animation-delay: 0.32s; }
+    .field:nth-child(6) { animation-delay: 0.38s; }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.42rem;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      padding: 0.72rem 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      appearance: none;
+    }
+
+    input::placeholder { color: var(--muted); font-weight: 300; }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,241,53,0.1);
+    }
+
+    input.error { border-color: var(--error); }
+
+    .err-msg {
+      font-size: 0.72rem;
+      color: var(--error);
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .input-wrap { position: relative; }
+
+    .toggle-pwd {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; padding: 0;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .toggle-pwd:hover { color: var(--accent); }
+    .toggle-pwd svg { display: block; }
+
+    .strength-bar {
+      margin-top: 0.5rem;
+      display: flex; gap: 4px;
+    }
+    .strength-bar span {
+      flex: 1; height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .strength-bar.s1 span:nth-child(1)              { background: var(--error); }
+    .strength-bar.s2 span:nth-child(-n+2)            { background: #f5a623; }
+    .strength-bar.s3 span:nth-child(-n+3)            { background: #f5d223; }
+    .strength-bar.s4 span                            { background: var(--accent); }
+
+    .terms {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin: 1.2rem 0 1.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .terms input[type="checkbox"] {
+      width: 16px; height: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .terms a { color: var(--accent); text-decoration: none; }
+    .terms a:hover { text-decoration: underline; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.82rem;
+      background: var(--accent);
+      color: #0b0c10;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn-submit:hover { opacity: 0.88; }
+    .btn-submit:active { transform: scale(0.98); }
+
+    .btn-submit .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.15);
+      animation: ripple 0.55s linear;
+      pointer-events: none;
+      transform: scale(0);
+    }
+    @keyframes ripple {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 1.2rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .login-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .login-link a:hover { text-decoration: underline; }
+
+    /* success overlay */
+    .success-overlay {
+      position: absolute; inset: 0;
+      background: var(--surface);
+      border-radius: 18px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s;
+    }
+    .success-overlay.show { opacity: 1; pointer-events: all; }
+    .success-icon {
+      width: 64px; height: 64px;
+      background: var(--accent-dim);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .success-overlay h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem; font-weight: 800;
+    }
+    .success-overlay p { font-size: 0.85rem; color: var(--muted); }
+
+    select option { background: #13141a; }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.4rem; }
+      .row { grid-template-columns: 1fr; }
+      h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+
+  <div class="header">
+    <div class="badge">New account</div>
+    <h1>Create your<br/>account</h1>
+    <p class="subtitle">Join us — it only takes a minute.</p>
+  </div>
+
+  <form id="registerForm" novalidate>
+
+    <div class="row">
+      <div class="field">
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" name="firstName" placeholder="Jane" autocomplete="given-name" />
+        <div class="err-msg" id="firstNameErr">Required</div>
+      </div>
+      <div class="field">
+        <label for="lastName">Last name</label>
+        <input type="text" id="lastName" name="lastName" placeholder="Smith" autocomplete="family-name" />
+        <div class="err-msg" id="lastNameErr">Required</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email" />
+      <div class="err-msg" id="emailErr">Enter a valid email</div>
+    </div>
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="janesmith" autocomplete="username" />
+      <div class="err-msg" id="usernameErr">At least 3 characters</div>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" name="password" placeholder="Create a strong password" autocomplete="new-password" />
+        <button type="button" class="toggle-pwd" aria-label="Toggle password visibility" data-target="password">
+          <svg id="eye-pwd" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="strength-bar" id="strengthBar">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="err-msg" id="passwordErr">Minimum 8 characters</div>
+    </div>
+
+    <div class="field">
+      <label for="confirmPassword">Confirm password</label>
+      <div class="input-wrap">
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat your password" autocomplete="new-password" />
+        <button type="button" class="toggle-pwd" aria-label="Toggle confirm password visibility" data-target="confirmPassword">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="err-msg" id="confirmPasswordErr">Passwords do not match</div>
+    </div>
+
+    <label class="terms">
+      <input type="checkbox" id="terms" name="terms" />
+      <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+    </label>
+    <div class="err-msg" id="termsErr" style="margin-top:-0.8rem;margin-bottom:1rem;">Please accept to continue</div>
+
+    <button type="submit" class="btn-submit">Create Account</button>
+  </form>
+
+  <p class="login-link">Already have an account? <a href="#">Sign in</a></p>
+
+  <!-- success overlay -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c8f135" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h2>You're in!</h2>
+    <p>Account created successfully.</p>
+  </div>
+
+</div>
+
+<script>
+  /* ── toggle password visibility ── */
+  document.querySelectorAll('.toggle-pwd').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  /* ── password strength ── */
+  const pwdInput = document.getElementById('password');
+  const bar = document.getElementById('strengthBar');
+
+  pwdInput.addEventListener('input', () => {
+    const v = pwdInput.value;
+    let score = 0;
+    if (v.length >= 8)               score++;
+    if (/[A-Z]/.test(v))            score++;
+    if (/[0-9]/.test(v))            score++;
+    if (/[^A-Za-z0-9]/.test(v))     score++;
+    bar.className = 'strength-bar' + (v ? ` s${score}` : '');
+  });
+
+  /* ── ripple ── */
+  document.querySelector('.btn-submit').addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const size = Math.max(rect.width, rect.height);
+    r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+    this.appendChild(r);
+    setTimeout(() => r.remove(), 600);
+  });
+
+  /* ── validation helpers ── */
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    if (msg) el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function clearErr(id) { document.getElementById(id).style.display = 'none'; }
+  function markField(input, valid) {
+    input.classList.toggle('error', !valid);
+  }
+
+  /* ── live inline validation ── */
+  const rules = [
+    { id: 'firstName',       errId: 'firstNameErr',       check: v => v.trim().length > 0,               msg: 'Required' },
+    { id: 'lastName',        errId: 'lastNameErr',        check: v => v.trim().length > 0,               msg: 'Required' },
+    { id: 'email',           errId: 'emailErr',           check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), msg: 'Enter a valid email' },
+    { id: 'username',        errId: 'usernameErr',        check: v => v.trim().length >= 3,              msg: 'At least 3 characters' },
+    { id: 'password',        errId: 'passwordErr',        check: v => v.length >= 8,                     msg: 'Minimum 8 characters' },
+    { id: 'confirmPassword', errId: 'confirmPasswordErr', check: v => v === pwdInput.value,              msg: 'Passwords do not match' },
+  ];
+
+  rules.forEach(({ id, errId, check, msg }) => {
+    const el = document.getElementById(id);
+    el.addEventListener('blur', () => {
+      const ok = check(el.value);
+      markField(el, ok);
+      ok ? clearErr(errId) : showErr(errId, msg);
+    });
+    el.addEventListener('input', () => {
+      if (el.classList.contains('error')) {
+        const ok = check(el.value);
+        markField(el, ok);
+        ok ? clearErr(errId) : showErr(errId, msg);
+      }
+    });
+  });
+
+  /* ── form submit ── */
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+
+    rules.forEach(({ id, errId, check, msg }) => {
+      const el = document.getElementById(id);
+      const ok = check(el.value);
+      markField(el, ok);
+      if (ok) { clearErr(errId); } else { showErr(errId, msg); valid = false; }
+    });
+
+    const terms = document.getElementById('terms');
+    if (!terms.checked) { showErr('termsErr', 'Please accept to continue'); valid = false; }
+    else clearErr('termsErr');
+
+    if (valid) {
+      document.getElementById('successOverlay').classList.add('show');
+    }
+  });
+</script>
+</body>
+</html>
