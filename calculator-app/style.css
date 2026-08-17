@@ -47,6 +47,38 @@ body {
     flex-direction: column;
 }
 
+/* Mode Switcher */
+.mode-switcher {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 6px;
+}
+
+.mode-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mode-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+
 .display-section {
     background: rgba(45, 91, 255, 0.1);
     border-radius: 12px;
@@ -158,6 +190,76 @@ body {
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Hidden grid display */
+.hidden {
+    display: none !important;
+}
+
+/* Scientific button styles */
+.btn-scientific {
+    background: var(--secondary-color);
+}
+
+.btn-scientific:hover {
+    background: #e55a2b;
+    box-shadow: 0 8px 16px rgba(255, 107, 53, 0.3);
+}
+
+/* Base Converter Styles */
+.base-converter {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.base-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.base-input-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.base-input-group input {
+    padding: 12px;
+    background: rgba(45, 91, 255, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.base-input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(45, 91, 255, 0.3);
+}
+
+.clear-base-btn {
+    padding: 12px;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.clear-base-btn:hover {
+    background: #e55555;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
 /* History Panel */

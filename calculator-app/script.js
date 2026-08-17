@@ -256,6 +256,123 @@ class Calculator {
         this.currentOperand = result;
         this.updateDisplay();
     }
+
+    // ===== SCIENTIFIC FUNCTIONS =====
+
+    /**
+     * Calculate square root
+     * Time Complexity: O(1)
+     */
+    sqrt() {
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(current) || current < 0) {
+            this.currentOperand = 'Error';
+            this.updateDisplay();
+            return;
+        }
+        this.currentOperand = this.formatResult(Math.sqrt(current));
+        this.addToHistory(`√${current}`, this.currentOperand);
+        this.updateDisplay();
+    }
+
+    /**
+     * Calculate square (x²)
+     * Time Complexity: O(1)
+     */
+    square() {
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(current)) return;
+        this.currentOperand = this.formatResult(current * current);
+        this.addToHistory(`${current}²`, this.currentOperand);
+        this.updateDisplay();
+    }
+
+    /**
+     * Set power operation (x^y)
+     * Time Complexity: O(1)
+     */
+    choosePower() {
+        if (this.currentOperand === '') return;
+        if (this.previousOperand !== '') {
+            this.compute();
+        }
+        this.operation = '^';
+        this.previousOperand = this.currentOperand;
+        this.currentOperand = '';
+        this.updateDisplay();
+    }
+
+    /**
+     * Calculate logarithm (base 10)
+     * Time Complexity: O(1)
+     */
+    log() {
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(current) || current <= 0) {
+            this.currentOperand = 'Error';
+            this.updateDisplay();
+            return;
+        }
+        this.currentOperand = this.formatResult(Math.log10(current));
+        this.addToHistory(`log(${current})`, this.currentOperand);
+        this.updateDisplay();
+    }
+
+    /**
+     * Calculate natural logarithm (ln)
+     * Time Complexity: O(1)
+     */
+    ln() {
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(current) || current <= 0) {
+            this.currentOperand = 'Error';
+            this.updateDisplay();
+            return;
+        }
+        this.currentOperand = this.formatResult(Math.log(current));
+        this.addToHistory(`ln(${current})`, this.currentOperand);
+        this.updateDisplay();
+    }
+
+    /**
+     * Extended compute to handle power operation
+     * Time Complexity: O(1)
+     */
+    computeExtended() {
+        let computation;
+        const prev = parseFloat(this.previousOperand);
+        const current = parseFloat(this.currentOperand);
+
+        if (isNaN(prev) || isNaN(current)) return;
+
+        switch (this.operation) {
+            case '^':
+                computation = Math.pow(prev, current);
+                break;
+            default:
+                return this.compute();
+        }
+
+        this.currentOperand = this.formatResult(computation);
+        this.operation = undefined;
+        this.previousOperand = '';
+        this.updateDisplay();
+    }
+
+    /**
+     * Execute calculation for scientific operations
+     */
+    executeScientificCalculation() {
+        if (this.operation === '^') {
+            if (this.previousOperand === '' || this.currentOperand === '') return;
+            const prev = this.previousOperand;
+            const curr = this.currentOperand;
+            this.computeExtended();
+            this.addToHistory(`${prev}^${curr}`, this.currentOperand);
+        } else {
+            this.executeCalculation();
+        }
+    }
 }
 
 // Initialize calculator when DOM is ready
@@ -388,4 +505,147 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial history display
     updateHistoryDisplay();
+
+    // ===== MODE SWITCHING =====
+    const basicModeBtn = document.getElementById('basicModeBtn');
+    const scientificModeBtn = document.getElementById('scientificModeBtn');
+    const baseConverterBtn = document.getElementById('baseConverterBtn');
+    
+    const basicGrid = document.getElementById('basicGrid');
+    const scientificGrid = document.getElementById('scientificGrid');
+    const baseConverterGrid = document.getElementById('baseConverterGrid');
+
+    function switchMode(mode) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+        
+        // Hide all grids
+        basicGrid.classList.add('hidden');
+        scientificGrid.classList.add('hidden');
+        baseConverterGrid.classList.add('hidden');
+
+        // Show selected grid and mark button active
+        if (mode === 'basic') {
+            basicModeBtn.classList.add('active');
+            basicGrid.classList.remove('hidden');
+        } else if (mode === 'scientific') {
+            scientificModeBtn.classList.add('active');
+            scientificGrid.classList.remove('hidden');
+        } else if (mode === 'base') {
+            baseConverterBtn.classList.add('active');
+            baseConverterGrid.classList.remove('hidden');
+        }
+    }
+
+    basicModeBtn.addEventListener('click', () => switchMode('basic'));
+    scientificModeBtn.addEventListener('click', () => switchMode('scientific'));
+    baseConverterBtn.addEventListener('click', () => switchMode('base'));
+
+    // ===== SCIENTIFIC FUNCTIONS =====
+    const sqrtBtn = document.getElementById('sqrtBtn');
+    const squareBtn = document.getElementById('squareBtn');
+    const powerBtn = document.getElementById('powerBtn');
+    const logBtn = document.getElementById('logBtn');
+    const lnBtn = document.getElementById('lnBtn');
+    const equalsBtnSci = document.getElementById('equalsBtnSci');
+    const clearBtnSci = document.getElementById('clearBtnSci');
+    const deleteBtnSci = document.getElementById('deleteBtnSci');
+
+    // Scientific calculator buttons - numbers
+    const scientificNumberButtons = scientificGrid.querySelectorAll('[data-number]');
+    scientificNumberButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            calculator.appendNumber(button.dataset.number);
+        });
+    });
+
+    // Scientific calculator buttons - operators
+    const scientificOperatorButtons = scientificGrid.querySelectorAll('[data-operator]');
+    scientificOperatorButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            calculator.chooseOperation(button.dataset.operator);
+        });
+    });
+
+    sqrtBtn.addEventListener('click', () => {
+        calculator.sqrt();
+        updateHistoryDisplay();
+    });
+
+    squareBtn.addEventListener('click', () => {
+        calculator.square();
+        updateHistoryDisplay();
+    });
+
+    powerBtn.addEventListener('click', () => {
+        calculator.choosePower();
+    });
+
+    logBtn.addEventListener('click', () => {
+        calculator.log();
+        updateHistoryDisplay();
+    });
+
+    lnBtn.addEventListener('click', () => {
+        calculator.ln();
+        updateHistoryDisplay();
+    });
+
+    equalsBtnSci.addEventListener('click', () => {
+        calculator.executeScientificCalculation();
+        updateHistoryDisplay();
+    });
+
+    clearBtnSci.addEventListener('click', () => {
+        calculator.clear();
+    });
+
+    deleteBtnSci.addEventListener('click', () => {
+        calculator.delete();
+    });
+
+    // ===== BASE CONVERTER =====
+    const decimalInput = document.getElementById('decimalInput');
+    const binaryInput = document.getElementById('binaryInput');
+    const hexInput = document.getElementById('hexInput');
+    const octalInput = document.getElementById('octalInput');
+    const clearBaseBtn = document.getElementById('clearBaseBtn');
+
+    /**
+     * Convert number between bases
+     * Time Complexity: O(1) for small numbers, O(log n) for large numbers
+     */
+    function convertBases(decimalValue) {
+        if (decimalValue === '' || decimalValue === null) {
+            binaryInput.value = '';
+            hexInput.value = '';
+            octalInput.value = '';
+            return;
+        }
+
+        const num = parseInt(decimalValue, 10);
+        
+        if (isNaN(num) || num < 0) {
+            binaryInput.value = 'Invalid';
+            hexInput.value = 'Invalid';
+            octalInput.value = 'Invalid';
+            return;
+        }
+
+        // Convert to different bases
+        binaryInput.value = num.toString(2);      // Binary (base 2)
+        hexInput.value = num.toString(16).toUpperCase();    // Hexadecimal (base 16)
+        octalInput.value = num.toString(8);       // Octal (base 8)
+    }
+
+    decimalInput.addEventListener('input', (e) => {
+        convertBases(e.target.value);
+    });
+
+    clearBaseBtn.addEventListener('click', () => {
+        decimalInput.value = '';
+        binaryInput.value = '';
+        hexInput.value = '';
+        octalInput.value = '';
+    });
 });
