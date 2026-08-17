@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator">
+            <div class="mode-switcher">
+                <button class="mode-btn active" id="basicModeBtn">Basic</button>
+                <button class="mode-btn" id="scientificModeBtn">Scientific</button>
+                <button class="mode-btn" id="baseConverterBtn">Base</button>
+            </div>
+
+            <div class="display-section">
+                <div class="previous-operand" id="previousOperand"></div>
+                <div class="current-operand" id="currentOperand">0</div>
+            </div>
+            
+            <!-- Basic Calculator Grid -->
+            <div class="button-grid" id="basicGrid">
+                <!-- Row 1: Utilities -->
+                <button class="btn btn-utility" id="clearBtn">AC</button>
+                <button class="btn btn-utility" id="deleteBtn">DEL</button>
+                <button class="btn btn-utility" id="percentBtn">%</button>
+                <button class="btn btn-operator" data-operator="/">÷</button>
+
+                <!-- Row 2 -->
+                <button class="btn btn-number" data-number="7">7</button>
+                <button class="btn btn-number" data-number="8">8</button>
+                <button class="btn btn-number" data-number="9">9</button>
+                <button class="btn btn-operator" data-operator="*">×</button>
+
+                <!-- Row 3 -->
+                <button class="btn btn-number" data-number="4">4</button>
+                <button class="btn btn-number" data-number="5">5</button>
+                <button class="btn btn-number" data-number="6">6</button>
+                <button class="btn btn-operator" data-operator="-">−</button>
+
+                <!-- Row 4 -->
+                <button class="btn btn-number" data-number="1">1</button>
+                <button class="btn btn-number" data-number="2">2</button>
+                <button class="btn btn-number" data-number="3">3</button>
+                <button class="btn btn-operator" data-operator="+">+</button>
+
+                <!-- Row 5 -->
+                <button class="btn btn-number btn-zero" data-number="0">0</button>
+                <button class="btn btn-number" data-number=".">.</button>
+                <button class="btn btn-equals" id="equalsBtn">=</button>
+            </div>
+
+            <!-- Scientific Calculator Grid -->
+            <div class="button-grid hidden" id="scientificGrid">
+                <!-- Row 1: Scientific utilities -->
+                <button class="btn btn-utility" id="clearBtnSci">AC</button>
+                <button class="btn btn-utility" id="deleteBtnSci">DEL</button>
+                <button class="btn btn-scientific" id="sqrtBtn">√</button>
+                <button class="btn btn-scientific" id="squareBtn">x²</button>
+
+                <!-- Row 2: Advanced operations -->
+                <button class="btn btn-scientific" id="powerBtn">x^y</button>
+                <button class="btn btn-scientific" id="logBtn">log</button>
+                <button class="btn btn-scientific" id="lnBtn">ln</button>
+                <button class="btn btn-operator" data-operator="/">÷</button>
+
+                <!-- Row 3-5: Numbers and basic operators -->
+                <button class="btn btn-number" data-number="7">7</button>
+                <button class="btn btn-number" data-number="8">8</button>
+                <button class="btn btn-number" data-number="9">9</button>
+                <button class="btn btn-operator" data-operator="*">×</button>
+
+                <button class="btn btn-number" data-number="4">4</button>
+                <button class="btn btn-number" data-number="5">5</button>
+                <button class="btn btn-number" data-number="6">6</button>
+                <button class="btn btn-operator" data-operator="-">−</button>
+
+                <button class="btn btn-number" data-number="1">1</button>
+                <button class="btn btn-number" data-number="2">2</button>
+                <button class="btn btn-number" data-number="3">3</button>
+                <button class="btn btn-operator" data-operator="+">+</button>
+
+                <button class="btn btn-number btn-zero" data-number="0">0</button>
+                <button class="btn btn-number" data-number=".">.</button>
+                <button class="btn btn-equals" id="equalsBtnSci">=</button>
+            </div>
+
+            <!-- Base Converter Grid -->
+            <div class="button-grid hidden" id="baseConverterGrid">
+                <div class="base-converter">
+                    <div class="base-input-group">
+                        <label for="decimalInput">Decimal (Base 10)</label>
+                        <input type="number" id="decimalInput" placeholder="Enter decimal number">
+                    </div>
+
+                    <div class="base-input-group">
+                        <label for="binaryInput">Binary (Base 2)</label>
+                        <input type="text" id="binaryInput" placeholder="Binary" readonly>
+                    </div>
+
+                    <div class="base-input-group">
+                        <label for="hexInput">Hexadecimal (Base 16)</label>
+                        <input type="text" id="hexInput" placeholder="Hex" readonly>
+                    </div>
+
+                    <div class="base-input-group">
+                        <label for="octalInput">Octal (Base 8)</label>
+                        <input type="text" id="octalInput" placeholder="Octal" readonly>
+                    </div>
+
+                    <button class="clear-base-btn" id="clearBaseBtn">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Panel -->
+        <div class="history-panel">
+            <div class="history-header">
+                <h3>History</h3>
+                <button class="history-clear-btn" id="clearHistoryBtn">Clear</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <p class="empty-message">No calculations yet</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
