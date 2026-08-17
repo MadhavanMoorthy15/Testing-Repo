@@ -5,18 +5,32 @@ A sample repository demonstrating a spec-first (OpenSpec) development workflow w
 
 ## 🎯 Reference Applications
 
-This repository contains **two complete reference applications** built using the OpenSpec spec-driven workflow:
+This repository contains **three complete reference applications** demonstrating different development approaches:
 
 ### 1. Voice Notes App
 A voice note-taking application with AI enhancement features, SQLite persistence, and rich text editing.
 - **Location**: `/voice-notes-app/`
 - **Tech**: React + Vite + Syncfusion Components + sql.js
+- **Workflow**: OpenSpec spec-driven development
 
 ### 2. E-commerce App (ShopHub) 🆕
 A full-featured online shopping platform with product catalog, shopping cart, wishlist, and user authentication.
 - **Location**: `/ecommerce-app/`
 - **Tech**: React + Vite + TypeScript + React Router
+- **Workflow**: OpenSpec spec-driven development
 - **Documentation**: [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md)
+
+### 3. Advanced Calculator 🆕
+A highly efficient calculator application with complete calculation history and persistence.
+- **Location**: `/calculator-app/`
+- **Tech**: Vanilla JavaScript + HTML5 + CSS3 (no frameworks)
+- **Features**: 
+  - Basic arithmetic + percentage calculations
+  - Persistent calculation history (LocalStorage)
+  - Full keyboard support
+  - Responsive design (desktop, tablet, mobile)
+  - O(1) arithmetic operations, optimized performance
+- **Documentation**: [calculator-app/README.md](calculator-app/README.md)
 
 ---
 
@@ -42,6 +56,20 @@ npm run dev
 
 Visit `http://localhost:5173` in your browser.
 
+### Advanced Calculator
+
+No installation needed! Simply open the HTML file in your browser:
+
+```bash
+# Option 1: Open directly in browser
+open calculator-app/index.html
+
+# Option 2: Run a local server
+cd calculator-app
+python3 -m http.server 8000
+# Visit http://localhost:8000 in your browser
+```
+
 ---
 
 ## What this repo contains
@@ -57,6 +85,12 @@ Visit `http://localhost:5173` in your browser.
 - **voice-notes-app/**: Voice note-taking reference implementation
   - App entry: [voice-notes-app/src/main.tsx](voice-notes-app/src/main.tsx)
   - Scripts & deps: [voice-notes-app/package.json](voice-notes-app/package.json)
+
+- **calculator-app/** 🆕: Highly efficient vanilla JavaScript calculator
+  - All-in-one HTML file with inline styles and scripts
+  - Core calculator: [calculator-app/script.js](calculator-app/script.js)
+  - Styling: [calculator-app/style.css](calculator-app/style.css)
+  - Full documentation: [calculator-app/README.md](calculator-app/README.md)
 
 - **front-end-design/**: Design examples and static HTML/CSS/JS mockups for screens
 
