@@ -13,8 +13,10 @@
 
         :root {
             --primary: #0f172a;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
+            --accent-blue: #0066ff;
+            --accent-blue-light: #3391ff;
+            --accent-red: #ff2e4b;
+            --accent-red-light: #ff5b7a;
             --text: #1e293b;
             --text-light: #64748b;
             --border: #e2e8f0;
@@ -70,7 +72,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-red));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -99,12 +101,12 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: var(--accent);
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-red));
             transition: width 0.3s ease;
         }
 
         .nav-links a:hover {
-            color: var(--accent);
+            color: var(--accent-blue);
         }
 
         .nav-links a:hover::after {
@@ -112,7 +114,7 @@
         }
 
         .cta-button {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-red));
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -125,9 +127,8 @@
         }
 
         .cta-button:hover {
-            background: var(--accent-light);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 8px 25px rgba(255, 46, 75, 0.3);
         }
 
         /* Hero Section */
@@ -154,7 +155,7 @@
             font-weight: 800;
             margin-bottom: 1.5rem;
             line-height: 1.2;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-red));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -193,9 +194,9 @@
         }
 
         .btn-secondary:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(59, 130, 246, 0.05);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(0, 102, 255, 0.05);
         }
 
         .hero-image {
@@ -207,7 +208,7 @@
         .placeholder-image {
             width: 100%;
             height: 500px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(255, 46, 75, 0.08));
             border-radius: 16px;
             border: 1px solid var(--border);
             display: flex;
@@ -256,15 +257,15 @@
         .feature-card:nth-child(3) { animation-delay: 0.3s; }
 
         .feature-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-red);
+            box-shadow: 0 20px 40px rgba(255, 46, 75, 0.15);
             transform: translateY(-6px);
         }
 
         .feature-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-red));
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -318,7 +319,8 @@
         }
 
         .cta-section .cta-button:hover {
-            background: var(--bg-alt);
+            background: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         /* Footer */
