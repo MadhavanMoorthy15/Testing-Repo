@@ -10,10 +10,22 @@ public class Addition {
         System.out.print("Enter second number: ");
         double num2 = scanner.nextDouble();
         
-        double sum = num1 + num2;
-        
-        System.out.println("Sum: " + sum);
+        System.out.println("Sum: " + add(num1, num2));
+        System.out.println("Difference: " + subtract(num1, num2));
+        System.out.println("Product: " + multiply(num1, num2));
         
         scanner.close();
+    }
+    
+    public static double add(double a, double b) {
+        return a + b;
+    }
+    
+    public static double subtract(double a, double b) {
+        return a - b;
+    }
+    
+    public static double multiply(double a, double b) {
+        return a * b;
     }
 }
