@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In</title>
+    <link rel="stylesheet" href="login-form.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-box">
+        <!-- Header -->
+        <div class="login-header">
+          <h1>Welcome Back</h1>
+          <p>Sign in to your account to continue</p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-container" style="display: none"></div>
+
+        <!-- Login Form -->
+        <form id="login-form" novalidate>
+          <!-- Email Field -->
+          <div class="form-group" data-field="email">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              required
+              autocomplete="email"
+            />
+            <span class="error-text"></span>
+          </div>
+
+          <!-- Password Field -->
+          <div class="form-group" data-field="password">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            />
+            <span class="error-text"></span>
+          </div>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="form-options">
+            <label class="remember-me">
+              <input type="checkbox" name="remember" />
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-password">Forgot password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="submit-btn">Sign In</button>
+        </form>
+
+        <!-- Sign Up Link -->
+        <div class="signup-link">
+          Don't have an account? <a href="#">Create one</a>
+        </div>
+      </div>
+
+      <!-- Decorative element -->
+      <div class="decoration"></div>
+    </div>
+
+    <script src="login-form.js"></script>
+  </body>
+</html>
