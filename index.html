@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Button Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #764ba2;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #653a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .btn-success {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-danger {
+            background-color: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e53e3e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+
+        .output {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f7fafc;
+            border-radius: 5px;
+            min-height: 30px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Button Demo</h1>
+        
+        <div class="button-group">
+            <button class="btn-primary" onclick="handleClick('Primary')">Primary Button</button>
+            <button class="btn-secondary" onclick="handleClick('Secondary')">Secondary Button</button>
+            <button class="btn-success" onclick="handleClick('Success')">Success Button</button>
+            <button class="btn-danger" onclick="handleClick('Danger')">Danger Button</button>
+        </div>
+
+        <div class="output" id="output">Click a button to see the message</div>
+    </div>
+
+    <script>
+        function handleClick(buttonName) {
+            const output = document.getElementById('output');
+            output.textContent = `You clicked the ${buttonName} button!`;
+        }
+    </script>
+</body>
+</html>
