@@ -26,10 +26,10 @@
         header {
             text-align: center;
             margin-bottom: 50px;
-            background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
+            background: linear-gradient(135deg, #ff6b35 0%, #ffb84d 50%, #ffa500 100%);
             padding: 40px 20px;
             border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(255, 140, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
             color: white;
         }
 
@@ -51,10 +51,14 @@
 
         .section-title {
             font-size: 2em;
-            color: #ff8c00;
+            background: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 25px;
             padding-bottom: 10px;
-            border-bottom: 3px solid #ffa500;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%) 1;
             display: inline-block;
         }
 
@@ -66,7 +70,8 @@
 
         .menu-item {
             background: white;
-            border-left: 5px solid #ff8c00;
+            border-left: 5px solid;
+            border-image: linear-gradient(180deg, #ff6b35 0%, #ff8c00 50%, #ffa500 100%) 1;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(255, 140, 0, 0.15);
@@ -75,7 +80,7 @@
 
         .menu-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 140, 0, 0.25);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.35);
         }
 
         .menu-item-header {
@@ -87,12 +92,15 @@
 
         .item-name {
             font-size: 1.3em;
-            color: #ff8c00;
+            background: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-weight: 600;
         }
 
         .price {
-            background: #ffa500;
+            background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
             color: white;
             padding: 5px 12px;
             border-radius: 20px;
@@ -127,7 +135,7 @@
             text-align: center;
             margin-top: 50px;
             padding: 30px;
-            background: #ff8c00;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c00 50%, #ffa500 100%);
             color: white;
             border-radius: 10px;
             font-size: 1.1em;
@@ -306,9 +314,9 @@
         <footer>
             <p>Thank you for dining with us!</p>
             <div class="contact-info">
-                📞 (555) 123-4567 | 📧 info@flavorhaven.com | 🕐 Open Daily 10am - 10pm
+                📞 (555) 123-4567 | 📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f666169604f69636e79607d676e796a61216c6062">[email&#160;protected]</a> | 🕐 Open Daily 10am - 10pm
             </div>
         </footer>
     </div>
-</body>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
 </html>
