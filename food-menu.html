@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff8dc 0%, #ffe4b5 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffb84d 50%, #ffa500 100%);
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+            color: white;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-style: italic;
+        }
+
+        .menu-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            background: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%) 1;
+            display: inline-block;
+        }
+
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            background: white;
+            border-left: 5px solid;
+            border-image: linear-gradient(180deg, #ff6b35 0%, #ff8c00 50%, #ffa500 100%) 1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.35);
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-size: 1.3em;
+            background: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .price {
+            background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .item-description {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .item-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .special {
+            background: linear-gradient(135deg, #fff9e6 0%, #fffff0 100%);
+            border-left-color: #ffd700;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c00 50%, #ffa500 100%);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.1em;
+        }
+
+        .contact-info {
+            margin-top: 10px;
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Flavor Haven</h1>
+            <p class="tagline">Delicious Food, Unforgettable Memories</p>
+        </header>
+
+        <!-- Appetizers Section -->
+        <section class="menu-section">
+            <h2 class="section-title">🥘 Appetizers</h2>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Crispy Spring Rolls</span>
+                        <span class="price">$6.99</span>
+                    </div>
+                    <p class="item-description">Golden, crispy rolls filled with vegetables and served with sweet chili sauce.</p>
+                    <span class="item-badge">✓ Vegetarian</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Garlic Bread</span>
+                        <span class="price">$5.99</span>
+                    </div>
+                    <p class="item-description">Toasted bread brushed with garlic butter and fresh herbs.</p>
+                    <span class="item-badge">Popular</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Cheese Nachos</span>
+                        <span class="price">$7.99</span>
+                    </div>
+                    <p class="item-description">Crispy chips loaded with melted cheese, jalapeños, and sour cream.</p>
+                    <span class="item-badge">✓ Vegetarian</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Courses Section -->
+        <section class="menu-section">
+            <h2 class="section-title">🍗 Main Courses</h2>
+            <div class="menu-items">
+                <div class="menu-item special">
+                    <div class="menu-item-header">
+                        <span class="item-name">Grilled Salmon Fillet</span>
+                        <span class="price">$18.99</span>
+                    </div>
+                    <p class="item-description">Fresh Atlantic salmon grilled to perfection, served with lemon butter sauce and seasonal vegetables.</p>
+                    <span class="item-badge">⭐ Chef's Special</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Tender Beef Steak</span>
+                        <span class="price">$22.99</span>
+                    </div>
+                    <p class="item-description">Premium cut beef cooked to your liking, topped with garlic and herb butter.</p>
+                    <span class="item-badge">Popular</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Creamy Pasta Carbonara</span>
+                        <span class="price">$14.99</span>
+                    </div>
+                    <p class="item-description">Classic Italian pasta with bacon, cream sauce, and parmesan cheese.</p>
+                    <span class="item-badge">✓ Vegetarian</span>
+                </div>
+
+                <div class="menu-item special">
+                    <div class="menu-item-header">
+                        <span class="item-name">Spicy Thai Curry</span>
+                        <span class="price">$16.99</span>
+                    </div>
+                    <p class="item-description">Aromatic curry with chicken, coconut milk, and fresh basil in a spicy sauce.</p>
+                    <span class="item-badge">🔥 Spicy</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Roasted Chicken</span>
+                        <span class="price">$15.99</span>
+                    </div>
+                    <p class="item-description">Herb-roasted chicken breast served with roasted potatoes and gravy.</p>
+                    <span class="item-badge">Popular</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Vegetable Stir Fry</span>
+                        <span class="price">$12.99</span>
+                    </div>
+                    <p class="item-description">Fresh seasonal vegetables tossed in a savory Asian sauce with tofu.</p>
+                    <span class="item-badge">✓ Vegan</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Desserts Section -->
+        <section class="menu-section">
+            <h2 class="section-title">🍰 Desserts</h2>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Chocolate Lava Cake</span>
+                        <span class="price">$8.99</span>
+                    </div>
+                    <p class="item-description">Warm chocolate cake with a molten center, served with vanilla ice cream.</p>
+                    <span class="item-badge">⭐ Favorite</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Strawberry Cheesecake</span>
+                        <span class="price">$7.99</span>
+                    </div>
+                    <p class="item-description">Rich and creamy cheesecake topped with fresh strawberry compote.</p>
+                    <span class="item-badge">✓ Vegetarian</span>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Mango Sorbet</span>
+                        <span class="price">$5.99</span>
+                    </div>
+                    <p class="item-description">Refreshing tropical mango ice served in a frozen mango shell.</p>
+                    <span class="item-badge">✓ Vegan</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Beverages Section -->
+        <section class="menu-section">
+            <h2 class="section-title">🍹 Beverages</h2>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Fresh Orange Juice</span>
+                        <span class="price">$3.99</span>
+                    </div>
+                    <p class="item-description">Freshly squeezed orange juice, served chilled.</p>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Iced Tea</span>
+                        <span class="price">$2.99</span>
+                    </div>
+                    <p class="item-description">Classic iced tea with a choice of flavors.</p>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-header">
+                        <span class="item-name">Mango Smoothie</span>
+                        <span class="price">$4.99</span>
+                    </div>
+                    <p class="item-description">Blended mango with yogurt and honey.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Thank you for dining with us!</p>
+            <div class="contact-info">
+                📞 (555) 123-4567 | 📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0f666169604f69636e79607d676e796a61216c6062">[email&#160;protected]</a> | 🕐 Open Daily 10am - 10pm
+            </div>
+        </footer>
+    </div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>
