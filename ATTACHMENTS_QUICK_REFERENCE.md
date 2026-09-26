@@ -1,248 +1,383 @@
-# Attachments Implementation — Quick Reference
+# Attachments Feature — Quick Reference Guide
 
-**Current Status:** 85–90% Complete  
-**Last Updated:** 2026-09-21
+## The Two Systems (One Feature)
 
----
+### System 1: Backend Infrastructure (85% Done)
+**Location:** `services/agent-server/` + `services/worker-ts-new/`
 
-## 🎯 One-Sentence Summary
+**What Works:**
+- POST /v1/attachments (upload with 11-step validation)
+- GET/DELETE/PATCH endpoints
+- PostgreSQL schema (multi-tenant, deduped)
+- S3 storage + presigned URLs
+- Image preprocessing
+- Worker attachment loader
+- Content block builder
 
-A multi-tenant file attachment system for an agent platform that stores files on S3, deduplicates by SHA-256, validates MIME types, auto-resizes images, and cleans up expired/idle files via 3-phase sweeper.
+**What's Missing:**
+- ❌ **Cleanup not scheduled** (5-min fix needed)
 
----
-
-## 📊 Completion Status by Layer
-
-### Backend Server ✅ 95% Complete
-| Component | Status | Details |
-|-----------|--------|---------|
-| Upload endpoint | ✅ | POST /v1/attachments (10 files, multipart) |
-| List/Get/Delete | ✅ | Full CRUD with soft-delete |
-| Validation pipeline | ✅ | 11-step magic-bytes → S3 → URL cache |
-| Rate limiting | ✅ | 100 uploads/hour per user |
-| Runs integration | ✅ | attachmentIds in run payload |
-| Threads integration | ✅ | attachmentIds in follow-up messages |
-| **Cleanup scheduling** | ❌ | Service built, not wired to cron |
-
-### Worker ✅ 100% Complete
-| Component | Status | Details |
-|-----------|--------|---------|
-| Attachment loader | ✅ | Bulk load, URL refresh (<1h buffer) |
-| Block builder | ✅ | Image + text blocks (Anthropic format) |
-| LRU bookkeeping | ✅ | Bump usage on access |
-| Orchestrator types | ✅ | attachmentIds passed through job |
-
-### Frontend ✅ 85% Complete
-| Component | Status | Details |
-|-----------|--------|---------|
-| Upload picker | ✅ | File + drag-drop, 20 files max |
-| Progress display | ✅ | Per-file status + thumbnails |
-| ChatInput integration | ✅ | Picker chip in message bar |
-| Message display | ✅ | Attachment chips + hover preview |
-| API client | ✅ | POST/GET/DELETE wrapper |
-| **E2E tests** | ❌ | Round-trip upload→send→see missing |
-| **Error recovery UI** | ❌ | Retry button, cancel pending |
-| **Accessibility** | ⚠️ | ARIA labels needed |
-
-### Data Model ✅ 100% Complete
-| Component | Status | Details |
-|-----------|--------|---------|
-| Schema | ✅ | user_attachments table |
-| Indexes | ✅ | Dedup, org/user scope, LRU |
-| Soft-delete | ✅ | 30-day restore window |
-| Presigned URL cache | ✅ | Refresh on 1-hour buffer |
+**Key Metric:** 90% cost reduction, 70% faster first-token latency
 
 ---
 
-## 🔴 Three Critical Gaps
+### System 2: Frontend UI (0% Done)
+**Location:** `apps/syncfusion-code/src/`
 
-### 1. **Cleanup Not Scheduled** (5 min fix)
+**What to Build:**
+- File picker + upload UI
+- Attachment chips (uploading/uploaded/error states)
+- Send integration with attachmentIds
+- Local image previews (with cleanup)
+- Validation + error handling
+
+**Implementation Plan:** 7 slices, 5–7 days total
+
+---
+
+## The Critical 5-Minute Fix
+
 **File:** `services/agent-server/src/main.ts`
 
-**What's missing:**
-```typescript
-await app.register(attachmentsCleanupPlugin);
+**Problem:** Cleanup service exists but never runs
+
+**Solution:**
+```ts
+import { attachmentsCleanupPlugin } from "./plugins/attachments-cleanup.plugin.js";
+
+export async function createApp() {
+  const app = fastify(config);
+  
+  // ... middleware ...
+  
+  await app.register(attachmentsCleanupPlugin);  // ← ADD THIS LINE
+  
+  // ... routes ...
+  
+  return app;
+}
 ```
 
-**Impact:** Without this, soft-deleted files stay in S3 forever. Org quotas don't enforce.
+**Impact:** Without this, deleted files stay in S3 forever → quotas break
 
 ---
 
-### 2. **No E2E Tests** (45 min each)
-**Missing:**
-- Backend: Upload → Run → Worker → Message verification
-- Frontend: Upload file → Send message → Agent sees attachment
+## Request/Response Shapes
 
-**Impact:** Risk of silent failures in the round-trip flow.
+### Upload Request
+```ts
+POST /v1/attachments
+Content-Type: multipart/form-data
 
----
-
-### 3. **No Observability** (1–2 hours)
-**Missing:**
-- Prometheus metrics (upload count, usage histogram, cleanup duration)
-- Quota alerts (org approaching 8GB)
-- Tracing spans
-
-**Impact:** Can't monitor production usage or troubleshoot issues.
-
----
-
-## 🔄 How It Works
-
-```
-USER UPLOAD
-    ↓
-┌─ Multipart form (up to 10 files)
-├─ Magic-bytes validation (detect spoofed types)
-├─ MIME whitelist check (35 types allowed)
-├─ Size check (50MB images, 5MB text)
-├─ Org quota check (< 10GB)
-├─ User count check (< 100)
-├─ SHA-256 dedup lookup
-│  ├─ Hit → return existing row (200 OK)
-│  └─ Miss → continue
-├─ Image preprocessing (resize, EXIF strip, thumbnail)
-├─ S3 PUT with retry (3× exponential backoff)
-├─ Generate presigned URL (30-day cache)
-└─ INSERT user_attachments + return att_NNN
-
-    ↓
-
-RUN ATTACHMENT RESOLUTION
-    ├─ Client sends: attachmentIds: ["att_001", "att_002"]
-    ├─ Server validates: SELECT WHERE org/user/ready
-    ├─ BullMQ job payload includes attachmentIds
-    ↓
-
-WORKER PROCESSING
-    ├─ Load attachments by public ID
-    ├─ Refresh presigned URLs if expiring <1h
-    ├─ Bump LRU usage (lastUsedAt, useCount++)
-    ├─ Build content blocks (Anthropic format)
-    │  ├─ Images: { type: "image", source: { url } }
-    │  ├─ Small text: { type: "text", text: "// File: ...\n\n<body>" }
-    │  └─ Large text: { type: "text", text: "<file:att_NNN> too large" }
-    ├─ Include in LLM prompt
-    ↓
-
-LLM CONTEXT
-    ├─ AI receives compact block (~350 tokens for large file)
-    ├─ If needs more, calls read_file(path, offset, limit)
-    ├─ Responds with attachment context
-    ↓
-
-CLEANUP (Every 1 hour)
-    ├─ Phase A: Hard-delete from S3 after 1h soft-delete window
-    ├─ Phase B: Auto-delete unused >30 days
-    └─ Phase C: LRU evict if org >10GB
+{
+  file: File              // One or more files
+  modelName?: string      // e.g., "claude-3-5-sonnet"
+  isSupportImages?: bool
+  purpose?: "image" | "file"
+}
 ```
 
----
-
-## 📋 Configuration
-
-**Essential ENV vars:**
+### Upload Response
+```ts
+{
+  attachments: [
+    {
+      filename: "app.ts",
+      ok: true,
+      attachment: {
+        attachmentId: "att_001",        // ← Use this in run payload
+        kind: "file",
+        mimeType: "application/typescript",
+        sizeBytes: 2048,
+        url: "https://s3.../att_001.ts?sig=...",
+        previewUrl: null,
+        expiresAt: "2025-02-01T...",
+        warning: null,
+        visionWarning: null,
+      }
+    },
+    {
+      filename: "screenshot.png",
+      ok: true,
+      attachment: {
+        attachmentId: "att_002",
+        kind: "image",
+        width: 1920,
+        height: 1080,
+        previewUrl: "https://s3.../att_002-thumb.webp?sig=..."
+      }
+    },
+    {
+      filename: "large.bin",
+      ok: false,
+      error: {
+        code: "FILE_TOO_LARGE",
+        message: "File exceeds 5 MB limit"
+      }
+    }
+  ]
+}
 ```
-MAX_ATTACHMENTS_PER_USER=100
-MAX_STORAGE_PER_ORG=10737418240 (10GB)
-MAX_FILE_SIZE_IMAGES=52428800 (50MB)
-MAX_FILE_SIZE_TEXT=5242880 (5MB)
-ATTACHMENT_RATE_LIMIT=100 (per hour)
-AWS_S3_BUCKET=my-bucket
-AWS_CLOUDFRONT_DOMAIN=assets.example.com (optional, for signed URLs)
+
+### Run Request with Attachments
+```ts
+POST /v1/runs
+{
+  input: {
+    messages: [
+      {
+        role: "human",
+        content: "Review these files",
+        attachmentIds: ["att_001", "att_002"]  // ← Include here
+      }
+    ]
+  }
+}
 ```
 
 ---
 
-## 🧠 Key Design Decisions
+## Limits
 
-| Decision | Rationale | Alternative |
-|----------|-----------|-------------|
-| Dedup by SHA-256 + org/user | Saves storage, but per-user not org-wide | Org-wide dedup: shares storage but loses privacy audit trail |
-| 50MB image / 5MB text limits | LLM context budget + S3 upload cost | Configurable, but 5MB is reasonable for code/text |
-| Soft-delete + 30d restore | Safe recovery from accidents | Hard-delete immediately: faster, riskier |
-| Presigned URL caching | Avoid regeneration cost on every run | Regenerate on every run: simpler, slower |
-| Phase C LRU eviction | Automatic quota enforcement | Manual user intervention: requires support |
-
----
-
-## 🚨 Known Limitations
-
-1. **PDF not supported** — Deferred (complex parsing, LLM doesn't see content anyway)
-2. **No pause/resume upload** — Large files upload atomically or fail
-3. **No multi-part S3 upload** — Single PUT, 3× retry on failure
-4. **Image resizing always on** — Can't opt out, preserves aspect ratio
-5. **Presigned URL TTL clamped to 7d** — Without CloudFront, S3 max is 7 days
+| Limit | Value |
+|-------|-------|
+| Max attachments per message | 5 |
+| Max files in one upload batch | 10 |
+| Max image size | 50 MB |
+| Max code/text file size | 5 MB |
 
 ---
 
-## ✅ Phase Completion Checklist
+## Supported File Types
 
-- [x] Phase 1: Data model
-- [x] Phase 2: Upload + validation
-- [x] Phase 3: List/Get/Delete
-- [x] Phase 4: Run & Thread integration
-- [x] Phase 5: Background cleanup (built but not scheduled)
-- [x] Phase 6: Frontend components (core; polish pending)
-- [⚠️] Phase 7: Testing & observability (unit tests done, e2e/metrics missing)
+**Images (7):** PNG, JPEG, WebP, GIF, SVG, HEIC, HEIF
 
----
+**Code (13):** TS, TSX, JS, JSX, Python, Ruby, Go, Rust, Java, Kotlin, Swift, C, C++
 
-## 🎬 To Complete This Feature
+**Structured (4):** JSON, XML, HTML, Markdown
 
-1. **5 min:** Register cleanup plugin in main.ts
-2. **45 min:** Write backend E2E test (upload → run → worker → message)
-3. **60 min:** Write frontend Playwright test (upload → send → verify)
-4. **30 min:** Update README + config docs
-5. **2 hours:** Add Prometheus metrics + quota alerts
-6. **2 hours:** Frontend UX polish (retry, progress, warnings)
-7. **1 hour:** Accessibility audit (WCAG AA)
-
-**Total: ~6.5 hours to full production readiness**
+**Text (4):** TXT, CSV, YAML, TOML
 
 ---
 
-## 🔗 Files to Know
+## Frontend Component Checklist
 
-**Quick find the right file:**
+### Slice 1: Types + API (1 day)
+- [ ] `types/attachments.ts` — All interfaces
+- [ ] `api/attachments.ts` — Upload/CRUD helpers
+- [ ] `api/paths.ts` — Endpoint URLs
+- [ ] Unit tests for normalization + errors
 
-| Need | File |
-|------|------|
-| Upload endpoint | `services/agent-server/src/routes/attachments.route.ts` |
-| Validation logic | `services/agent-server/src/services/attachment.service.ts` |
-| DB schema | `services/shared/src/db/schema/user-attachments.ts` |
-| Cleanup service | `services/agent-server/src/services/attachment-cleanup.service.ts` |
-| **Register cleanup** | `services/agent-server/src/main.ts` ← **CRITICAL** |
-| Worker loading | `services/worker-ts-new/src/services/attachment.service.ts` |
-| Block builder | `services/worker-ts-new/src/utils/build-attachment-blocks.ts` |
-| React upload picker | `client/react-chat/src/components/AttachmentUploadPicker.tsx` |
-| Frontend API client | `client/react-chat/src/lib/api/attachments.ts` |
+### Slice 2: SDK Payload (0.5 days)
+- [ ] Add `attachmentIds` to `AgentInputMessage`
+- [ ] Update `useAgentStream.submit`
+- [ ] SDK tests (serialization, backward compat)
+
+### Slice 3: Single-File Upload (1.5 days)
+- [ ] Enable Files button
+- [ ] File input + picker
+- [ ] Client validation
+- [ ] Upload with success/error states
+- [ ] Component tests
+
+### Slice 4: Multi-File UX (2 days)
+- [ ] 5-item cap + disabled state
+- [ ] Batch uploads (10-file chunks)
+- [ ] Image previews (Object URLs)
+- [ ] Warning/error chips
+- [ ] URL cleanup on remove/unmount
+- [ ] Send blocking
+
+### Slice 5: New-Thread E2E (1 day)
+- [ ] Composer → stream hook
+- [ ] Verify request includes attachmentIds
+- [ ] Optimistic rendering
+- [ ] Integration tests
+
+### Slice 6: Existing-Thread E2E (1 day)
+- [ ] Follow-up message flow
+- [ ] Same contract as new-thread
+- [ ] Retry without duplication
+- [ ] Integration tests
+
+### Slice 7: Backend Verification (1.5 days)
+- [ ] Confirm public ID format
+- [ ] Test ownership validation
+- [ ] Test attachment status filtering
+- [ ] Test 5-item limit
+- [ ] Contract tests
 
 ---
 
-## 📈 Token Economy
+## State Machine: Attachment Lifecycle
 
-| Scenario | Without Offloading | With Offloading | Savings |
-|----------|-------------------|-----------------|---------|
-| 5-turn conversation, 1 large file | 60,000 tokens | 1,800 tokens | **97%** |
-| Cost per user thread | $0.20–$0.50 | $0.01–$0.03 | **90%** |
-| First-token latency | 2.5–4.0s | 0.5–0.8s | **70%** |
+```
+┌──────────────────┐
+│  User selects    │
+│  from picker     │
+└────────┬─────────┘
+         │
+         ↓
+    ┌─────────────┐
+    │ UPLOADING   │
+    └──┬─────┬────┘
+       │     │
+       │  (cancel by user)
+       │     │
+       │     ↓
+       │  ┌─────┐
+       │  │ IDLE│
+       │  └─────┘
+       │
+       ├──────────────┐
+       │              │
+  (success)       (failure)
+       │              │
+       ↓              ↓
+  ┌────────┐    ┌──────────┐
+  │UPLOADED│    │  ERROR   │
+  └───┬────┘    └────┬─────┘
+      │              │
+   (send)        (dismiss)
+      │              │
+      ↓              ↓
+  ┌────────┐    ┌──────────┐
+  │  SENT  │    │   IDLE   │
+  └────────┘    └──────────┘
+```
 
 ---
 
-## 🧪 What's Been Tested
+## Security Checklist (Never Forget)
 
-✅ Upload validation (magic-bytes, MIME, size)  
-✅ Deduplication  
-✅ Rate limiting  
-✅ Presigned URL refresh  
-✅ Cleanup phases (Phase A/B/C)  
-✅ Worker-side loading  
-
-❌ End-to-end attachment flow  
-❌ Frontend upload → agent sees file  
-❌ Quota enforcement under load  
+- ❌ **Never:** Send raw file bytes in payload
+- ❌ **Never:** Trust client-generated IDs
+- ❌ **Never:** Set `x-user-id` or `x-org-id` from browser
+- ❌ **Never:** Leave Object URLs unrevoked
+- ✅ **Always:** Validate locally + trust server
+- ✅ **Always:** Send only server-issued attachment IDs
+- ✅ **Always:** Check ownership on every request
+- ✅ **Always:** Show errors inline (don't silently drop)
 
 ---
 
-**For detailed analysis, see:** `ANALYSIS_ATTACHMENTS_SPEC.md`
+## Open Backend Questions
+
+Before implementing frontend Slice 1, get answers:
+
+1. **Public ID format?** `att_001` or UUID?
+2. **Model metadata exposes `isSupportImages`?**
+3. **Delete failed uploads or let cleanup?**
+4. **Drag-and-drop required v1?**
+5. **Persist metadata in history or server-enrich?**
+
+---
+
+## Testing Pyramid
+
+### Unit Tests (Types, Validation, Normalization)
+- File validation rules
+- Upload response parsing
+- Error mapping
+- SDK serialization
+
+### Component Tests (UI States)
+- Files button enable/disable
+- Picker invocation
+- Upload states (uploading/uploaded/error)
+- 5-item cap + tooltip
+- Send blocking
+- URL cleanup
+
+### Integration Tests (Full Flows)
+- New-thread sends attachmentIds
+- Existing-thread sends attachmentIds
+- Text-only unchanged
+- Partial failure resilience
+
+### Contract Tests (Backend)
+- Public ID lookup
+- Ownership validation (404 cross-tenant)
+- Status filtering (deleted/not-ready)
+- Max limit enforcement
+
+---
+
+## Cost Impact
+
+### Before (without sandbox sync)
+```
+5-turn conversation with 1 large file:
+  60,000 tokens = $0.20–$0.50 per thread
+```
+
+### After (with sandbox + pointer blocks)
+```
+5-turn conversation with same file:
+  1,750 tokens = $0.01–$0.03 per thread
+  ─────────────────────────
+  Savings: 97% tokens, 90% cost
+```
+
+---
+
+## Timeline
+
+| Milestone | Days | Owner |
+|-----------|------|-------|
+| Critical fix (cleanup scheduling) | 0.5 | Backend |
+| Frontend Slices 1–2 | 1.5 | Frontend |
+| Frontend Slices 3–4 | 3.5 | Frontend |
+| Frontend Slices 5–7 | 3.5 | Frontend |
+| Integration + E2E | 2–3 | Full Team |
+| Polish + Docs | 1 | Full Team |
+| **Total** | **~12–14 days** | |
+
+---
+
+## Key Files to Know
+
+### Backend
+- `services/agent-server/src/routes/attachments.route.ts` — REST endpoints
+- `services/agent-server/src/services/attachment.service.ts` — Business logic
+- `services/worker-ts-new/src/services/sandbox-attachment-sync.service.ts` — Download to sandbox
+- `services/agent-server/src/plugins/attachments-cleanup.plugin.ts` — Cleanup job (needs scheduling!)
+
+### Frontend
+- `apps/syncfusion-code/src/api/attachments.ts` — API client
+- `apps/syncfusion-code/src/types/attachments.ts` — Types
+- `apps/syncfusion-code/src/components/chat/ChatComposer.tsx` — Main upload UI
+- `apps/syncfusion-code/src/components/chat/AttachmentChip.tsx` — Chip states
+- `apps/syncfusion-code/src/chat/use-new-thread-stream.ts` — New thread integration
+- `apps/syncfusion-code/src/chat/use-existing-thread-stream.ts` — Follow-up integration
+
+---
+
+## Decision Tree: Which File to Read?
+
+```
+Q: What layer am I working on?
+├─ Backend infrastructure?
+│  → Read ANALYSIS_ATTACHMENTS_SPEC.md (878 lines)
+│
+├─ Frontend UI?
+│  → Read ANALYSIS_ATTACHMENTS_UI_SPEC.md (866 lines)
+│
+├─ Big picture / how they fit together?
+│  → Read COMPLETE_ATTACHMENTS_ANALYSIS_SUMMARY.md
+│
+└─ Quick reference / this is it
+   → You're reading it now! ✓
+```
+
+---
+
+## One-Paragraph Summary
+
+The **Attachments feature** is a multi-layer file upload system where users attach files via a chat composer UI, the frontend uploads them to the backend with multipart requests, the server validates and stores them in S3, and when a message is sent with attachment IDs, the worker downloads files to a sandbox, builds content blocks for the LLM with either URLs (images) or sandbox paths (code/text), and the AI responds with insights about the files. The backend is 85% done (missing only scheduled cleanup), and the frontend is a straightforward 7-slice implementation worth 5–7 days. The feature saves 90% on LLM token costs by using pointer blocks instead of inlining large files in every turn.
+
+---
+
+**Last updated:** Jan 15, 2025  
+**Branch:** `feat/cs-4e208100`  
+**Status:** Ready for implementation
