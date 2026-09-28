@@ -7,7 +7,27 @@ export default function ProductDetailsPage() {
   const { id } = useParams()
   const { allProducts, addToCart, addToWishlist } = useStore()
   const product = allProducts.find((item) => item.id === Number(id))
-  const relatedProducts = allProducts.filter((item) => item.category === product.category && item.id !== product.id).slice(0, 4)
+
+  if (!product) {
+    return (
+      <div className="rounded-[2rem] bg-white p-10 text-center shadow-card">
+        <h1 className="text-3xl font-black text-slate-900">Product not found</h1>
+        <p className="mt-3 text-sm text-slate-500">
+          The product you requested is unavailable or no longer exists.
+        </p>
+        <Link
+          to="/products"
+          className="mt-6 inline-flex rounded-full bg-accent px-6 py-3 text-sm font-bold text-white"
+        >
+          Back to products
+        </Link>
+      </div>
+    )
+  }
+
+  const relatedProducts = allProducts
+    .filter((item) => item.category === product.category && item.id !== product.id)
+    .slice(0, 4)
 
   return (
     <div className="space-y-10">

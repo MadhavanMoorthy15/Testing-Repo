@@ -3,6 +3,15 @@ import { products } from '../data/products'
 
 const StoreContext = createContext(null)
 
+const parseStoredItems = (key) => {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || '[]')
+    return Array.isArray(value) ? value : []
+  } catch {
+    return []
+  }
+}
+
 const starterUser = {
   name: 'Priya Sharma',
   email: 'priya@example.com',
@@ -24,8 +33,8 @@ export function StoreProvider({ children }) {
   ])
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem('junior-cart') || '[]')
-    const storedWishlist = JSON.parse(localStorage.getItem('junior-wishlist') || '[]')
+    const storedCart = parseStoredItems('junior-cart')
+    const storedWishlist = parseStoredItems('junior-wishlist')
     const storedTheme = localStorage.getItem('junior-theme')
 
     if (storedCart.length) {
@@ -36,72 +45,76 @@ export function StoreProvider({ children }) {
       setWishlistItems(storedWishlist)
     }
 
-    if (storedTheme) {
+    if (storedTheme === 'light' || storedTheme === 'dark') {
       setTheme(storedTheme)
     }
   }, [])
-
-  useEffect(() => {
-    localStorage.setItem('junior-cart', JSON.stringify(cartItems))
-    localStorage.setItem('junior-wishlist', JSON.stringify(wishlistItems))
-    localStorage.setItem('junior-theme', theme)
-    document.body.className = theme === 'dark' ? 'bg-slate-950 text-white' : 'bg-[#f4f7fb] text-slate-900'
-
-    const timer = setInterval(() => {
-      document.title = cartItems.length ? `(${cartItems.length}) ShopNest` : 'ShopNest'
-    }, 1200)
-  }, [cartItems, wishlistItems, theme])
 
   const cartCount = useMemo(
     () => cartItems.reduce((total, item) => total + item.quantity, 0),
     [cartItems],
   )
 
+  useEffect(() => {
+    localStorage.setItem('junior-cart', JSON.stringify(cartItems))
+    localStorage.setItem('junior-wishlist', JSON.stringify(wishlistItems))
+    localStorage.setItem('junior-theme', theme)
+    document.body.className = theme === 'dark' ? 'bg-slate-950 text-white' : 'bg-[#f4f7fb] text-slate-900'
+    document.title = cartCount ? `(${cartCount}) ShopNest` : 'ShopNest'
+  }, [cartItems, wishlistItems, theme, cartCount])
+
   const wishlistCount = wishlistItems.length
 
   const addToCart = (product) => {
-    const item = cartItems.find((entry) => entry.id === product.id)
+    setCartItems((currentItems) => {
+      const existingItem = currentItems.find((entry) => entry.id === product.id)
 
-    if (item) {
-      item.quantity += 1
-      setCartItems([...cartItems])
-      return
-    }
+      if (existingItem) {
+        return currentItems.map((entry) =>
+          entry.id === product.id
+            ? { ...entry, quantity: entry.quantity + 1 }
+            : entry,
+        )
+      }
 
-    setCartItems([...cartItems, { ...product, quantity: 1 }])
+      return [...currentItems, { ...product, quantity: 1 }]
+    })
   }
 
   const updateCartQuantity = (productId, direction) => {
-    const nextItems = cartItems.map((item) => {
-      if (item.id !== productId) {
-        return item
-      }
+    setCartItems((currentItems) =>
+      currentItems
+        .map((item) => {
+          if (item.id !== productId) {
+            return item
+          }
 
-      if (direction === 'decrease') {
-        return { ...item, quantity: item.quantity - 1 }
-      }
-
-      return { ...item, quantity: item.quantity + 1 }
-    })
-
-    setCartItems(nextItems.filter((item) => item.quantity >= 0))
+          const quantity = direction === 'decrease' ? item.quantity - 1 : item.quantity + 1
+          return { ...item, quantity }
+        })
+        .filter((item) => item.quantity > 0),
+    )
   }
 
   const removeFromCart = (productId) => {
-    setCartItems(cartItems.filter((item) => item.id !== productId))
+    setCartItems((currentItems) => currentItems.filter((item) => item.id !== productId))
   }
 
   const addToWishlist = (product) => {
-    setWishlistItems([...wishlistItems, product])
+    setWishlistItems((currentItems) =>
+      currentItems.some((item) => item.id === product.id)
+        ? currentItems.filter((item) => item.id !== product.id)
+        : [...currentItems, product],
+    )
   }
 
   const removeFromWishlist = (productId) => {
-    setWishlistItems(wishlistItems.filter((item) => item.id !== productId))
+    setWishlistItems((currentItems) => currentItems.filter((item) => item.id !== productId))
   }
 
   const isInWishlist = (productId) => wishlistItems.some((item) => item.id === productId)
 
-  const cartSubtotal = cartItems.reduce((total, item) => total + item.price, 0)
+  const cartSubtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
   const deliveryFee = cartItems.length ? 99 : 0
   const tax = Math.round(cartSubtotal * 0.18)
   const grandTotal = cartSubtotal + deliveryFee + tax

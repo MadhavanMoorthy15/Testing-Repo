@@ -15,6 +15,8 @@ export default function ProductCard({ product }) {
         />
         <button
           onClick={() => addToWishlist(product)}
+          aria-label={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-pressed={isInWishlist(product.id)}
           className={`absolute right-6 top-6 rounded-full px-3 py-2 text-sm font-semibold ${
             isInWishlist(product.id) ? 'bg-rose-500 text-white' : 'bg-white text-slate-800'
           }`}

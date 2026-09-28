@@ -6,7 +6,7 @@ This document describes the complete E-commerce application built using the Open
 
 ## Project Location
 
-**Application Directory**: `/ecommerce-app/`
+**Application Directory**: `/TESTAPPCREATE/`
 
 **OpenSpec Specifications**: `/openspec/specs/ecommerce-*/`
 
@@ -147,7 +147,7 @@ All specifications follow BDD-style format with Given/When/Then scenarios:
 ## File Structure
 
 ```
-ecommerce-app/
+TESTAPPCREATE/
 ├── src/
 │   ├── components/
 │   │   ├── layout/
@@ -200,7 +200,7 @@ ecommerce-app/
 ### Development Mode
 
 ```bash
-cd ecommerce-app
+cd TESTAPPCREATE
 npm install
 npm run dev
 ```

@@ -14,8 +14,8 @@ A voice note-taking application with AI enhancement features, SQLite persistence
 
 ### 2. E-commerce App (ShopHub) 🆕
 A full-featured online shopping platform with product catalog, shopping cart, wishlist, and user authentication.
-- **Location**: `/ecommerce-app/`
-- **Tech**: React + Vite + TypeScript + React Router
+- **Location**: `/TESTAPPCREATE/`
+- **Tech**: React + Vite + React Router
 - **Documentation**: [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md)
 
 ---
@@ -35,7 +35,7 @@ npm run dev
 ### E-commerce App (ShopHub)
 
 ```bash
-cd ecommerce-app
+cd TESTAPPCREATE
 npm install
 npm run dev
 ```
@@ -46,7 +46,7 @@ Visit `http://localhost:5173` in your browser.
 
 ## What this repo contains
 
-- **ecommerce-app/** 🆕: Full e-commerce application with OpenSpec specifications
+- **TESTAPPCREATE/** 🆕: Full e-commerce application with OpenSpec specifications
   - Complete product catalog with filtering and search
   - Shopping cart with real-time calculations
   - User authentication and session management

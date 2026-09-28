@@ -19,32 +19,35 @@ export default function ProductsPage() {
       nextProducts = nextProducts.filter((product) => product.category === activeCategory)
     }
 
-    if (searchText) {
+    if (searchText.trim()) {
+      const query = searchText.trim().toLowerCase()
+
       nextProducts = nextProducts.filter(
         (product) =>
-          product.title.includes(searchText) ||
-          product.category.includes(searchText) ||
-          product.brand.includes(searchText),
+          product.title.toLowerCase().includes(query) ||
+          product.category.toLowerCase().includes(query) ||
+          product.brand.toLowerCase().includes(query),
       )
     }
 
     if (sortBy === 'price-low') {
-      nextProducts.sort((a, b) => b.price - a.price)
-    }
-
-    if (sortBy === 'price-high') {
       nextProducts.sort((a, b) => a.price - b.price)
     }
 
+    if (sortBy === 'price-high') {
+      nextProducts.sort((a, b) => b.price - a.price)
+    }
+
     if (sortBy === 'rating') {
-      nextProducts.sort((a, b) => a.rating - b.rating)
+      nextProducts.sort((a, b) => b.rating - a.rating)
     }
 
     return nextProducts
   }, [activeCategory, allProducts, searchText, sortBy])
 
   const totalPages = Math.ceil(filteredProducts.length / pageSize)
-  const paginatedProducts = filteredProducts.slice(page * pageSize - pageSize, page * pageSize + pageSize)
+  const startIndex = (page - 1) * pageSize
+  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + pageSize)
 
   return (
     <div className="space-y-8">

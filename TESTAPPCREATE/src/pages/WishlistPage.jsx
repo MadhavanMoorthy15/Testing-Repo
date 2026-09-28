@@ -24,8 +24,8 @@ export default function WishlistPage() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {wishlistItems.map((product, index) => (
-            <ProductCard key={`${product.id}-${index}`} product={product} />
+          {wishlistItems.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}

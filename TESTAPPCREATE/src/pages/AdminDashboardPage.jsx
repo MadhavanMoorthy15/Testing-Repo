@@ -6,6 +6,11 @@ export default function AdminDashboardPage() {
   const { allProducts, cartItems, wishlistItems } = useStore()
   const lowStock = allProducts.filter((product) => product.stock <= 8)
   const totalValue = allProducts.reduce((sum, product) => sum + product.price * product.stock, 0)
+  const categoryCounts = categories.map((category) => ({
+    category,
+    count: allProducts.filter((product) => product.category === category).length,
+  }))
+  const maxCategoryCount = Math.max(...categoryCounts.map((item) => item.count), 1)
 
   return (
     <div className="space-y-8">
@@ -63,16 +68,16 @@ export default function AdminDashboardPage() {
           <div className="rounded-[2rem] bg-white p-6 shadow-card">
             <h3 className="text-xl font-black text-slate-900">Category Coverage</h3>
             <div className="mt-5 space-y-4">
-              {categories.map((category, index) => (
+              {categoryCounts.map(({ category, count }) => (
                 <div key={category}>
                   <div className="mb-2 flex items-center justify-between text-sm font-semibold text-slate-700">
                     <span>{category}</span>
-                    <span>{allProducts.filter((product) => product.category === category).length} items</span>
+                    <span>{count} items</span>
                   </div>
                   <div className="h-3 overflow-hidden rounded-full bg-slate-100">
                     <div
                       className="h-full rounded-full bg-accent"
-                      style={{ width: `${((index + 1) / categories.length) * 100}%` }}
+                      style={{ width: `${(count / maxCategoryCount) * 100}%` }}
                     />
                   </div>
                 </div>
