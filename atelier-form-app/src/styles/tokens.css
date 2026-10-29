@@ -1,0 +1,81 @@
+/*
+ * Atelier — design tokens.
+ *
+ * The visual direction is "studio ledger": warm paper, ink, and a single
+ * brass accent. Every colour, space, and duration in the app comes from here.
+ */
+
+:root {
+  /* --- Colour: paper and ink --- */
+  --paper: #f7f3ec;
+  --paper-raised: #fffdf9;
+  --paper-sunk: #efe8dc;
+  --paper-deep: #e7dfd0;
+
+  --ink: #1c1a17;
+  --ink-soft: #4a453d;
+  /* Darkened to clear WCAG AA (4.5:1) against the raised paper background. */
+  --ink-faint: #6f685c;
+  --ink-ghost: #8f8779;
+
+  --brass: #8a6a2f;
+  --brass-bright: #a98338;
+  --brass-wash: #f0e6d2;
+  --brass-edge: #d8c49a;
+
+  --danger: #9a3226;
+  --danger-wash: #f7e6e2;
+  --danger-edge: #e0b5ad;
+
+  --success: #3f6b4a;
+  --success-wash: #e5efe5;
+
+  /* --- Typography --- */
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Public Sans', 'Helvetica Neue', Arial, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2.25rem;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+
+  /* --- Spacing --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  /* --- Radii --- */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  /* --- Shadows --- */
+  --shadow-sheet: 0 1px 2px rgba(28, 26, 23, 0.06), 0 8px 24px rgba(28, 26, 23, 0.07);
+  --shadow-lift: 0 2px 4px rgba(28, 26, 23, 0.08), 0 14px 36px rgba(28, 26, 23, 0.1);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  /* --- Motion --- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 420ms;
+
+  /* --- Layout --- */
+  --sheet-max: 46rem;
+  --rail-width: 15rem;
+  --touch-target: 44px;
+}

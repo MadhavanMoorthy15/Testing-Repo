@@ -1,0 +1,261 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.skipLink {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: 10;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--ink);
+  color: var(--paper-raised);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transform: translateY(-200%);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+.masthead {
+  border-bottom: 1px solid var(--paper-deep);
+  background-color: rgba(247, 243, 236, 0.85);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.mastheadInner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+}
+
+.wordmarkText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.wordmarkName {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.wordmarkTag {
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 26rem) {
+  .wordmarkTag {
+    display: none;
+  }
+
+  .mastheadInner {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+.mastheadProgress {
+  width: min(14rem, 40%);
+}
+
+.layout {
+  flex: 1;
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (min-width: 60rem) {
+  .layout {
+    grid-template-columns: var(--rail-width) minmax(0, 1fr);
+    gap: var(--space-7);
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+.sheet {
+  background-color: var(--paper-raised);
+  border: 1px solid var(--paper-deep);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sheet);
+  padding: var(--space-6);
+}
+
+@media (max-width: 40rem) {
+  .sheet {
+    padding: var(--space-5) var(--space-4);
+  }
+}
+
+.stepHeading {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+}
+
+.stepIntro {
+  color: var(--ink-soft);
+  max-width: 34rem;
+  margin-bottom: var(--space-6);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+@media (max-width: 40rem) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  min-width: 0;
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.summaryWrap {
+  margin-bottom: var(--space-6);
+}
+
+.consentWrap {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--paper-deep);
+}
+
+.submitError {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--danger-edge);
+  border-radius: var(--radius-md);
+  background-color: var(--danger-wash);
+  color: var(--danger);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.draftPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid var(--brass-edge);
+  border-radius: var(--radius-md);
+  background-color: var(--brass-wash);
+}
+
+.draftText {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.draftActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.draftButton {
+  min-height: var(--touch-target);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brass-edge);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.draftButton:hover {
+  border-color: var(--brass);
+  background-color: var(--brass-wash);
+}
+
+.draftButtonPrimary {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper-raised);
+}
+
+.draftButtonPrimary:hover {
+  background-color: var(--brass);
+  border-color: var(--brass);
+  color: var(--paper-raised);
+}
+
+/* Staggered reveal of the step contents. */
+.enter {
+  animation: rise var(--duration-slow) var(--ease-out) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer {
+  border-top: 1px solid var(--paper-deep);
+  padding: var(--space-5);
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--ink-ghost);
+}

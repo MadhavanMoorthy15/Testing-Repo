@@ -1,0 +1,123 @@
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.marker {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--paper-deep);
+  background-color: var(--paper-raised);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink-faint);
+  transition: all var(--duration-base) var(--ease-out);
+}
+
+.itemCurrent .marker {
+  border-color: var(--brass);
+  background-color: var(--brass);
+  color: var(--paper-raised);
+  box-shadow: 0 0 0 4px var(--brass-wash);
+}
+
+.itemDone .marker {
+  border-color: var(--brass-edge);
+  background-color: var(--brass-wash);
+  color: var(--brass);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding-top: 0.1rem;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--ink-faint);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.itemCurrent .name {
+  color: var(--ink);
+}
+
+.itemDone .name {
+  color: var(--ink-soft);
+}
+
+.caption {
+  font-size: var(--text-xs);
+  color: var(--ink-ghost);
+  line-height: var(--leading-snug);
+}
+
+@media (min-width: 60rem) {
+  .rail {
+    position: sticky;
+    /* Clear the sticky masthead so the first step is never hidden behind it. */
+    top: calc(var(--space-6) + 4rem);
+  }
+}
+
+/* On mobile the rail collapses to a compact horizontal strip so it does not
+   push the form below the fold. */
+@media (max-width: 59.99rem) {
+  .rail {
+    gap: var(--space-2);
+  }
+
+  .list {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .item {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    flex: 1;
+    text-align: center;
+  }
+
+  .text {
+    align-items: center;
+    padding-top: 0;
+  }
+
+  .caption {
+    display: none;
+  }
+
+  .name {
+    font-size: var(--text-xs);
+  }
+}

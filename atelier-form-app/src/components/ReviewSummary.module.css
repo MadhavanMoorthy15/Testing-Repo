@@ -1,0 +1,114 @@
+.sheet {
+  background-color: var(--paper-raised);
+  border: 1px solid var(--paper-deep);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sheet);
+  padding: var(--space-6);
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.group {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.groupLegend {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--ink);
+  padding: 0;
+  margin: 0 0 var(--space-1);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.groupNumber {
+  font-size: var(--text-xs);
+  color: var(--brass);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+}
+
+.groupCaption {
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--paper-deep);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px dashed var(--paper-deep);
+}
+
+.label {
+  font-size: var(--text-sm);
+  color: var(--ink-faint);
+  margin: 0;
+}
+
+.rowWide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 40rem) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--brass);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.edit:hover {
+  background-color: var(--brass-wash);
+  border-color: var(--brass-edge);
+}
+
+.empty {
+  color: var(--ink-ghost);
+  font-style: italic;
+}
+
+.value {
+  color: var(--ink);
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--text-md);
+}
