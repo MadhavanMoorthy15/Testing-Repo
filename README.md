@@ -18,6 +18,12 @@ A full-featured online shopping platform with product catalog, shopping cart, wi
 - **Tech**: React + Vite + TypeScript + React Router
 - **Documentation**: [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md)
 
+### 3. Atelier Form App 🆕
+A multi-step commission request form for a fictional joinery studio, demonstrating schema-driven fields, self-explaining validation, focus management, and draft persistence.
+- **Location**: `/atelier-form-app/`
+- **Tech**: React + Vite + TypeScript + CSS Modules
+- **Specs**: `openspec/specs/commission-form/`, `openspec/specs/form-draft/`, `openspec/specs/form-submission/`
+
 ---
 
 ## Quick Start
@@ -28,6 +34,14 @@ A full-featured online shopping platform with product catalog, shopping cart, wi
 
 ```bash
 cd voice-notes-app
+npm install
+npm run dev
+```
+
+### Atelier Form App
+
+```bash
+cd atelier-form-app
 npm install
 npm run dev
 ```
@@ -45,6 +59,13 @@ Visit `http://localhost:5173` in your browser.
 ---
 
 ## What this repo contains
+
+- **atelier-form-app/** 🆕: Multi-step commission request form
+  - Schema-driven fields — one definition drives rendering, validation, the review summary, and the draft
+  - Self-explaining validation with an error summary and focus management
+  - Autosaved drafts in `localStorage`, restored on return
+  - Review summary, consent gate, and submission confirmation
+  - See [atelier-form-app/README.md](atelier-form-app/README.md) for full documentation
 
 - **ecommerce-app/** 🆕: Full e-commerce application with OpenSpec specifications
   - Complete product catalog with filtering and search
@@ -96,6 +117,12 @@ The `openspec/specs/` directory contains feature-level specifications that drive
 - **ecommerce-checkout/spec.md** — Multi-step checkout, shipping, payment, order placement
 - **ecommerce-user-account/spec.md** — Authentication, profile, addresses, order history
 - **ecommerce-order-management/spec.md** — Order tracking, status updates, cancellation, invoices
+
+### Atelier Form App Specs 🆕
+
+- **commission-form/spec.md** — Step model, schema-driven field rendering, per-step validation, inline errors, error summary and focus management, and the rule set
+- **form-draft/spec.md** — Autosaving, restoring, and clearing the in-progress form state
+- **form-submission/spec.md** — Review summary, consent gate, submission, and the confirmation reference
 
 ---
 
@@ -161,15 +188,15 @@ See [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md) for complete documentation.
 
 ## Tech Stack Comparison
 
-| Feature | Voice Notes | E-commerce |
-|---------|-------------|------------|
-| Framework | React 19 + TypeScript | React 19 + TypeScript |
-| Build Tool | Vite 8 | Vite 8 |
-| Routing | React Router | React Router DOM |
-| UI Components | Syncfusion | Custom CSS |
-| State Management | Context API | Context API |
-| Data Persistence | sql.js (SQLite) | localStorage |
-| Styling | CSS + Syncfusion Theme | Pure CSS3 |
+| Feature | Voice Notes | E-commerce | Atelier Form |
+|---------|-------------|------------|---------------|
+| Framework | React 19 + TypeScript | React 19 + TypeScript | React 19 + TypeScript |
+| Build Tool | Vite 8 | Vite 8 | Vite 8 |
+| Routing | React Router | React Router DOM | None (single view) |
+| UI Components | Syncfusion | Custom CSS | Custom CSS (CSS Modules) |
+| State Management | Context API | Context API | Context API + Reducer |
+| Data Persistence | sql.js (SQLite) | localStorage | localStorage (drafts) |
+| Styling | CSS + Syncfusion Theme | Pure CSS3 | CSS Modules |
 
 ---
 

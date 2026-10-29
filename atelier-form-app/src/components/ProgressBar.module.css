@@ -1,0 +1,22 @@
+.progress {
+  height: 3px;
+  width: 100%;
+  background-color: var(--paper-deep);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background-color: var(--brass);
+  border-radius: var(--radius-pill);
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+.caption {
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
