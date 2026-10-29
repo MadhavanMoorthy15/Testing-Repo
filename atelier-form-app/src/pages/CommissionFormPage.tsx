@@ -37,8 +37,15 @@ export function CommissionFormPage() {
   }, [currentStepIndex]);
 
   // Move focus to the step heading whenever the step changes, so keyboard and
-  // screen reader users are told that the context has changed.
+  // screen reader users are told that the context has changed. The first
+  // render is skipped so the heading is not focused before the user has
+  // interacted with the form.
+  const hasMounted = useRef(false);
   useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
     headingRef.current?.focus();
   }, [currentStepIndex]);
 
