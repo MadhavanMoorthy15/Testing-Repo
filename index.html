@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA // Generative Ambient Synthesizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Fullscreen Interactive Particle & Audio Ripple Canvas -->
+  <canvas id="ambient-canvas"></canvas>
+  <div class="noise-overlay"></div>
+
+  <div class="app-shell">
+    <header class="interactive-zone">
+      <div class="logo-container">
+        <div class="glyph"></div>
+        <div>
+          <div class="brand-title">AURA // SYNTH</div>
+          <div class="brand-subtitle">GENERATIVE HARMONIC RESONATOR</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-badge" id="engine-status">
+          <span class="status-dot idle" id="status-dot"></span>
+          <span id="status-text">ENGINE STANDBY</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Left Control Drawer -->
+      <aside class="glass-card interactive-zone">
+        <div class="panel-header">
+          <span class="panel-title">Resonance Engine</span>
+          <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-aurora);">24-BIT DSP</span>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>Harmonic Scale</span>
+            <span class="control-val" id="scale-label">Celeste Pentatonic</span>
+          </label>
+          <div class="chips-grid">
+            <button class="chip-btn active" data-scale="pentatonic">Pentatonic</button>
+            <button class="chip-btn" data-scale="dorian">Dorian Dream</button>
+            <button class="chip-btn" data-scale="lydian">Lydian Ether</button>
+            <button class="chip-btn" data-scale="japanese">Hirajoshi</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>Atmospheric Reverb</span>
+            <span class="control-val" id="reverb-val">74%</span>
+          </label>
+          <input type="range" id="reverb-slider" min="10" max="95" value="74">
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>Filter Resonance Cutoff</span>
+            <span class="control-val" id="filter-val">1450 Hz</span>
+          </label>
+          <input type="range" id="filter-slider" min="300" max="4800" step="50" value="1450">
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>Harmonic Shimmer (Octaves)</span>
+            <span class="control-val" id="shimmer-val">45%</span>
+          </label>
+          <input type="range" id="shimmer-slider" min="0" max="100" value="45">
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>Oscillator Timbre</span>
+            <span class="control-val" id="timbre-label">Sine / Triangle Warmth</span>
+          </label>
+          <div class="chips-grid">
+            <button class="chip-btn active" data-wave="sine">Warm Sine</button>
+            <button class="chip-btn" data-wave="triangle">Glass Triangle</button>
+            <button class="chip-btn" data-wave="sawtooth">Prism Saw</button>
+            <button class="chip-btn" data-wave="square">Sub Chime</button>
+          </div>
+        </div>
+
+        <div class="button-stack">
+          <button class="btn-primary" id="toggle-gen-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="gen-btn-label">START GENERATOR</span>
+          </button>
+          <button class="btn-secondary" id="randomize-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+            RANDOMIZE MOOD
+          </button>
+        </div>
+      </aside>
+
+      <!-- Center Dynamic Canvas / HUD -->
+      <section class="hud-center">
+        <div class="soundscape-hero interactive-zone" id="touch-stage">
+          <div class="hero-top-info">
+            <div>
+              <div class="chord-display" id="active-chord-text">Cmaj9</div>
+              <div class="chord-meta" id="active-chord-meta">FUNDAMENTAL FREQUENCY: 261.63 HZ</div>
+            </div>
+
+            <div class="mini-eq" id="mini-eq">
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+              <div class="eq-bar"></div>
+            </div>
+          </div>
+
+          <div class="interaction-hint" id="canvas-hint">
+            <div class="hint-icon">✦</div>
+            <div class="hint-text">Click anywhere or drag to paint sound ripples</div>
+          </div>
+
+          <!-- Harmonic Ribbon Trigger -->
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 0.1em; display:flex; justify-content:space-between;">
+              <span>HARMONIC RESONATORS (KEYS 1-7)</span>
+              <span>TOUCH / CLICK TO STRIKE</span>
+            </div>
+            <div class="nodes-ribbon" id="keyboard-ribbon">
+              <!-- Dynamically populated key nodes -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Lower telemetry HUD cards -->
+        <div class="hud-bottom-grid interactive-zone">
+          <div class="stats-card">
+            <div class="stats-icon">✧</div>
+            <div class="stats-info">
+              <span class="stats-title">Active Particles</span>
+              <span class="stats-value" id="particle-count">0</span>
+            </div>
+          </div>
+
+          <div class="stats-card">
+            <div class="stats-icon">⚡</div>
+            <div class="stats-info">
+              <span class="stats-title">BPM Flow Rate</span>
+              <span class="stats-value" id="flow-bpm">64 BPM</span>
+            </div>
+          </div>
+
+          <div class="stats-card">
+            <div class="stats-icon">◈</div>
+            <div class="stats-info">
+              <span class="stats-title">Harmonic Density</span>
+              <span class="stats-value" id="harmonic-density">4 Voices</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="interactive-zone">
+      <div>AURA SYNTHESIS &bull; WebAudio API &bull; Procedural Sound &amp; Canvas Rendering</div>
+      <div id="status-hint">Tip: Press [Space] to play/pause generative mode</div>
+    </footer>
+  </div>
+
+  <script>
+    /* =========================================================================
+       AURA // Generative Ambient Synthesizer Engine
+       ========================================================================= */
+
+    // Sound Scales Definition (frequencies in Hz based on C4)
+    const SCALES = {
+      pentatonic: {
+        name: "Celeste Pentatonic",
+        chords: ["Cmaj9", "Am7(add11)", "Fmaj7(#11)", "G6/9", "Em7"],
+        notes: [
+          { name: "C4", freq: 261.63 },
+          { name: "D4", freq: 293.66 },
+          { name: "E4", freq: 329.63 },
+          { name: "G4", freq: 392.00 },
+          { name: "A4", freq: 440.00 },
+          { name: "C5", freq: 523.25 },
+          { name: "D5", freq: 587.33 }
+        ]
+      },
+      dorian: {
+        name: "Dorian Dream",
+        chords: ["Dm9", "G13", "Cmaj7", "Em7b5", "Bbmaj7"],
+        notes: [
+          { name: "D4", freq: 293.66 },
+          { name: "E4", freq: 329.63 },
+          { name: "F4", freq: 349.23 },
+          { name: "G4", freq: 392.00 },
+          { name: "A4", freq: 440.00 },
+          { name: "B4", freq: 493.88 },
+          { name: "C5", freq: 523.25 }
+        ]
+      },
+      lydian: {
+        name: "Lydian Ether",
+        chords: ["Fmaj7(#11)", "G/F", "Em7", "Am9", "Cmaj9"],
+        notes: [
+          { name: "F3", freq: 174.61 },
+          { name: "A3", freq: 220.00 },
+          { name: "C4", freq: 261.63 },
+          { name: "E4", freq: 329.63 },
+          { name: "G4", freq: 392.00 },
+          { name: "B4", freq: 493.88 },
+          { name: "E5", freq: 659.25 }
+        ]
+      },
+      japanese: {
+        name: "Hirajoshi",
+        chords: ["Csus4(b5)", "Abmaj7", "Fm9", "Db6", "Gsus4"],
+        notes: [
+          { name: "C4", freq: 261.63 },
+          { name: "Db4", freq: 277.18 },
+          { name: "F4", freq: 349.23 },
+          { name: "G4", freq: 392.00 },
+          { name: "Bb4", freq: 466.16 },
+          { name: "C5", freq: 523.25 },
+          { name: "Db5", freq: 554.37 }
+        ]
+      }
+    };
+
+    // Application State
+    const state = {
+      audioCtx: null,
+      masterGain: null,
+      reverbNode: null,
+      filterNode: null,
+      isPlaying: false,
+      currentScaleKey: "pentatonic",
+      waveType: "sine",
+      reverbAmount: 0.74,
+      filterCutoff: 1450,
+      shimmerAmount: 0.45,
+      activeVoiceCount: 0,
+      generatorTimer: null,
+      bpm: 64
+    };
+
+    // Canvas & Particles State
+    const canvas = document.getElementById("ambient-canvas");
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const particles = [];
+    const ripples = [];
+
+    // Resize handling
+    window.addEventListener("resize", () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    // Audio Graph Initialisation (triggered on first user interaction)
+    function initAudio() {
+      if (state.audioCtx) return;
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      state.audioCtx = new AudioCtx();
+
+      // Master output limiter & gain
+      state.masterGain = state.audioCtx.createGain();
+      state.masterGain.gain.setValueAtTime(0.4, state.audioCtx.currentTime);
+
+      // Lowpass Filter
+      state.filterNode = state.audioCtx.createBiquadFilter();
+      state.filterNode.type = "lowpass";
+      state.filterNode.frequency.setValueAtTime(state.filterCutoff, state.audioCtx.currentTime);
+      state.filterNode.Q.setValueAtTime(3.5, state.audioCtx.currentTime);
+
+      // Algorithmic Convolver Reverb (Procedural impulse response)
+      state.reverbNode = createImpulseReverb(state.audioCtx, 3.2, 2.0);
+
+      const dryGain = state.audioCtx.createGain();
+      const wetGain = state.audioCtx.createGain();
+
+      dryGain.gain.value = 1.0 - state.reverbAmount * 0.5;
+      wetGain.gain.value = state.reverbAmount * 0.8;
+
+      state.filterNode.connect(dryGain);
+      state.filterNode.connect(state.reverbNode);
+      state.reverbNode.connect(wetGain);
+
+      dryGain.connect(state.masterGain);
+      wetGain.connect(state.masterGain);
+
+      state.masterGain.connect(state.audioCtx.destination);
+
+      // Update UI Status
+      document.getElementById("status-dot").classList.remove("idle");
+      document.getElementById("status-text").innerText = "DSP RUNNING";
+    }
+
+    // Procedural Reverb Impulse Generator
+    function createImpulseReverb(context, duration, decay) {
+      const sampleRate = context.sampleRate;
+      const length = sampleRate * duration;
+      const impulse = context.createBuffer(2, length, sampleRate);
+      const left = impulse.getChannelData(0);
+      const right = impulse.getChannelData(1);
+
+      for (let i = 0; i < length; i++) {
+        const factor = Math.pow(1 - i / length, decay);
+        left[i] = (Math.random() * 2 - 1) * factor;
+        right[i] = (Math.random() * 2 - 1) * factor;
+      }
+
+      const convolver = context.createConvolver();
+      convolver.buffer = impulse;
+      return convolver;
+    }
+
+    // Play a single note tone with enveloping & harmonics
+    function playTone(freq, velocity = 0.5, panX = 0) {
+      initAudio();
+      if (state.audioCtx.state === "suspended") {
+        state.audioCtx.resume();
+      }
+
+      const now = state.audioCtx.currentTime;
+
+      // Primary Oscillator
+      const osc = state.audioCtx.createOscillator();
+      const noteGain = state.audioCtx.createGain();
+      const panner = state.audioCtx.createStereoPanner ? state.audioCtx.createStereoPanner() : null;
+
+      osc.type = state.waveType;
+      osc.frequency.setValueAtTime(freq, now);
+
+      // Micro-detune for analog lushness
+      osc.detune.setValueAtTime((Math.random() - 0.5) * 8, now);
+
+      // Envelope configuration (Atmospheric swell and release)
+      const attack = 0.12;
+      const decay = 2.4 + Math.random() * 1.5;
+
+      noteGain.gain.setValueAtTime(0.0001, now);
+      noteGain.gain.exponentialRampToValueAtTime(velocity * 0.5, now + attack);
+      noteGain.gain.exponentialRampToValueAtTime(0.00001, now + attack + decay);
+
+      // Optional Shimmer (Octave higher harmonic layer)
+      if (state.shimmerAmount > 0.05) {
+        const shimmerOsc = state.audioCtx.createOscillator();
+        const shimmerGain = state.audioCtx.createGain();
+
+        shimmerOsc.type = "sine";
+        shimmerOsc.frequency.setValueAtTime(freq * 2, now);
+        shimmerGain.gain.setValueAtTime(0.0001, now);
+        shimmerGain.gain.exponentialRampToValueAtTime(velocity * 0.25 * state.shimmerAmount, now + attack * 1.5);
+        shimmerGain.gain.exponentialRampToValueAtTime(0.00001, now + attack + decay * 1.2);
+
+        shimmerOsc.connect(shimmerGain);
+        shimmerGain.connect(state.filterNode);
+        shimmerOsc.start(now);
+        shimmerOsc.stop(now + attack + decay * 1.2);
+      }
+
+      // Routing
+      if (panner) {
+        panner.pan.setValueAtTime(Math.max(-0.9, Math.min(0.9, panX)), now);
+        osc.connect(noteGain);
+        noteGain.connect(panner);
+        panner.connect(state.filterNode);
+      } else {
+        osc.connect(noteGain);
+        noteGain.connect(state.filterNode);
+      }
+
+      osc.start(now);
+      osc.stop(now + attack + decay + 0.1);
+
+      // Visual pulse in EQ
+      animateEQBars();
+    }
+
+    // Interactive Trigger from Canvas or Keys
+    function triggerHarmonicNote(index, x = null, y = null) {
+      const currentScale = SCALES[state.currentScaleKey];
+      const note = currentScale.notes[index % currentScale.notes.length];
+      const pan = x ? (x / width) * 2 - 1 : 0;
+
+      playTone(note.freq, 0.7, pan);
+
+      // Update HUD
+      document.getElementById("active-chord-meta").innerText = `STRUCK: ${note.name} (${note.freq.toFixed(1)} HZ)`;
+
+      // Spawn visual ripple
+      const rippleX = x || (width / 2 + (Math.random() - 0.5) * 300);
+      const rippleY = y || (height / 2 + (Math.random() - 0.5) * 200);
+
+      createRipple(rippleX, rippleY, note.freq);
+
+      // Highlight corresponding ribbon key
+      const keys = document.querySelectorAll(".node-key");
+      if (keys[index]) {
+        keys[index].classList.add("sounding");
+        setTimeout(() => keys[index].classList.remove("sounding"), 350);
+      }
+    }
+
+    // Particle and Canvas Visual System
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.radius = Math.random() * 2 + 1;
+        this.alpha = Math.random() * 0.6 + 0.2;
+        this.hue = Math.random() > 0.5 ? 175 : 265;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue}, 80%, 65%, ${this.alpha})`;
+        ctx.shadowColor = `hsla(${this.hue}, 80%, 65%, 0.5)`;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    class Ripple {
+      constructor(x, y, freq) {
+        this.x = x;
+        this.y = y;
+        this.radius = 5;
+        this.maxRadius = 140 + Math.random() * 100;
+        this.alpha = 0.8;
+        this.speed = 1.8 + Math.random() * 1.2;
+        this.hue = Math.floor((freq % 400) / 400 * 120 + 160);
+      }
+
+      update() {
+        this.radius += this.speed;
+        this.alpha -= 0.009;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `hsla(${this.hue}, 90%, 60%, ${Math.max(0, this.alpha)})`;
+        ctx.lineWidth = 1.8;
+        ctx.shadowColor = `hsla(${this.hue}, 90%, 65%, 0.8)`;
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+
+        // Secondary inner echo ring
+        if (this.radius > 25) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius * 0.6, 0, Math.PI * 2);
+          ctx.strokeStyle = `hsla(${this.hue + 30}, 80%, 70%, ${Math.max(0, this.alpha * 0.5)})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    // Initialize 65 ambient particles
+    for (let i = 0; i < 65; i++) {
+      particles.push(new Particle());
+    }
+
+    function createRipple(x, y, freq = 300) {
+      ripples.push(new Ripple(x, y, freq));
+      if (ripples.length > 25) ripples.shift();
+    }
+
+    // Render Loop
+    function render() {
+      // Gentle fade effect for motion trails
+      ctx.fillStyle = "rgba(7, 9, 14, 0.22)";
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw faint constellation links between nearby particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 110) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(100, 200, 255, ${0.12 * (1 - dist / 110)})`;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw particles
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      // Draw ripples
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+        r.update();
+        r.draw();
+        if (r.alpha <= 0 || r.radius >= r.maxRadius) {
+          ripples.splice(i, 1);
+        }
+      }
+
+      // Update particle count HUD
+      document.getElementById("particle-count").innerText = particles.length + ripples.length;
+
+      requestAnimationFrame(render);
+    }
+    render();
+
+    // Equalizer visual animation
+    function animateEQBars() {
+      const bars = document.querySelectorAll(".eq-bar");
+      bars.forEach(bar => {
+        const h = Math.floor(Math.random() * 18 + 4);
+        bar.style.height = `${h}px`;
+      });
+      setTimeout(() => {
+        bars.forEach(bar => (bar.style.height = `4px`));
+      }, 350);
+    }
+
+    // Populate Harmonic Nodes Ribbon
+    function renderRibbonKeys() {
+      const container = document.getElementById("keyboard-ribbon");
+      container.innerHTML = "";
+      const currentScale = SCALES[state.currentScaleKey];
+
+      currentScale.notes.forEach((note, idx) => {
+        const keyEl = document.createElement("div");
+        keyEl.className = "node-key";
+        keyEl.innerHTML = `
+          <div class="node-key-label">${note.name}</div>
+          <div class="node-key-freq">${note.freq.toFixed(0)}Hz</div>
+        `;
+        keyEl.addEventListener("mousedown", (e) => {
+          e.stopPropagation();
+          triggerHarmonicNote(idx);
+        });
+        container.appendChild(keyEl);
+      });
+    }
+    renderRibbonKeys();
+
+    // Interactive Stage Click & Drag Event Handlers
+    const stage = document.getElementById("touch-stage");
+    let isMouseDown = false;
+
+    stage.addEventListener("mousedown", (e) => {
+      isMouseDown = true;
+      handleStageHit(e);
+    });
+
+    window.addEventListener("mouseup", () => {
+      isMouseDown = false;
+    });
+
+    stage.addEventListener("mousemove", (e) => {
+      if (isMouseDown && Math.random() > 0.75) {
+        handleStageHit(e);
+      }
+    });
+
+    // Touch support for mobile / tablets
+    stage.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      handleStageHit(touch);
+    }, { passive: false });
+
+    function handleStageHit(e) {
+      const rect = stage.getBoundingClientRect();
+      const x = e.clientX;
+      const y = e.clientY;
+      const relativeX = (x - rect.left) / rect.width;
+      const scale = SCALES[state.currentScaleKey];
+      const noteIdx = Math.floor(relativeX * scale.notes.length);
+
+      triggerHarmonicNote(Math.max(0, Math.min(scale.notes.length - 1, noteIdx)), x, y);
+
+      // Fade canvas hint after first interaction
+      document.getElementById("canvas-hint").style.opacity = "0.2";
+    }
+
+    // Generative Composition Cycle Engine
+    function startGenerativeLoop() {
+      if (state.generatorTimer) return;
+
+      initAudio();
+      state.isPlaying = true;
+      document.getElementById("status-text").innerText = "GENERATIVE ENGINE ACTIVE";
+      document.getElementById("gen-btn-label").innerText = "STOP GENERATOR";
+      document.getElementById("toggle-gen-btn").style.background = "linear-gradient(135deg, #f77062 0%, #fe5196 100%)";
+
+      let step = 0;
+      function tick() {
+        const currentScale = SCALES[state.currentScaleKey];
+
+        // Random note pick biased towards chords
+        const noteIdx = Math.floor(Math.random() * currentScale.notes.length);
+        const octaveShift = Math.random() > 0.7 ? 2 : 1;
+        const note = currentScale.notes[noteIdx];
+
+        playTone(note.freq * octaveShift, 0.45 + Math.random() * 0.3);
+        createRipple(
+          width * (0.2 + Math.random() * 0.6),
+          height * (0.2 + Math.random() * 0.6),
+          note.freq
+        );
+
+        // Periodically cycle chord display
+        if (step % 4 === 0) {
+          const chord = currentScale.chords[Math.floor(Math.random() * currentScale.chords.length)];
+          document.getElementById("active-chord-text").innerText = chord;
+        }
+
+        step++;
+
+        // Poly-rhythmic organic spacing
+        const interval = (60000 / state.bpm) * (Math.random() > 0.4 ? 0.75 : 1.5);
+        state.generatorTimer = setTimeout(tick, interval);
+      }
+
+      tick();
+    }
+
+    function stopGenerativeLoop() {
+      if (state.generatorTimer) {
+        clearTimeout(state.generatorTimer);
+        state.generatorTimer = null;
+      }
+      state.isPlaying = false;
+      document.getElementById("status-text").innerText = "DSP IDLE";
+      document.getElementById("gen-btn-label").innerText = "START GENERATOR";
+      document.getElementById("toggle-gen-btn").style.background = "";
+    }
+
+    // Toggle Button
+    document.getElementById("toggle-gen-btn").addEventListener("click", () => {
+      if (state.isPlaying) {
+        stopGenerativeLoop();
+      } else {
+        startGenerativeLoop();
+      }
+    });
+
+    // Scale Switcher Chips
+    document.querySelectorAll("[data-scale]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-scale]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.currentScaleKey = btn.dataset.scale;
+        document.getElementById("scale-label").innerText = SCALES[state.currentScaleKey].name;
+        renderRibbonKeys();
+        document.getElementById("active-chord-text").innerText = SCALES[state.currentScaleKey].chords[0];
+      });
+    });
+
+    // Waveform Switcher Chips
+    document.querySelectorAll("[data-wave]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-wave]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.waveType = btn.dataset.wave;
+        document.getElementById("timbre-label").innerText = btn.innerText;
+      });
+    });
+
+    // Slider Controls
+    const reverbSlider = document.getElementById("reverb-slider");
+    reverbSlider.addEventListener("input", (e) => {
+      state.reverbAmount = e.target.value / 100;
+      document.getElementById("reverb-val").innerText = `${e.target.value}%`;
+    });
+
+    const filterSlider = document.getElementById("filter-slider");
+    filterSlider.addEventListener("input", (e) => {
+      state.filterCutoff = parseFloat(e.target.value);
+      document.getElementById("filter-val").innerText = `${state.filterCutoff} Hz`;
+      if (state.filterNode && state.audioCtx) {
+        state.filterNode.frequency.setTargetAtTime(state.filterCutoff, state.audioCtx.currentTime, 0.05);
+      }
+    });
+
+    const shimmerSlider = document.getElementById("shimmer-slider");
+    shimmerSlider.addEventListener("input", (e) => {
+      state.shimmerAmount = e.target.value / 100;
+      document.getElementById("shimmer-val").innerText = `${e.target.value}%`;
+    });
+
+    // Mood Randomizer Button
+    document.getElementById("randomize-btn").addEventListener("click", () => {
+      const scaleKeys = Object.keys(SCALES);
+      const randomScale = scaleKeys[Math.floor(Math.random() * scaleKeys.length)];
+      const scaleBtn = document.querySelector(`[data-scale="${randomScale}"]`);
+      if (scaleBtn) scaleBtn.click();
+
+      const waves = ["sine", "triangle", "sawtooth"];
+      const randomWave = waves[Math.floor(Math.random() * waves.length)];
+      const waveBtn = document.querySelector(`[data-wave="${randomWave}"]`);
+      if (waveBtn) waveBtn.click();
+
+      const randomCutoff = Math.floor(Math.random() * 2500 + 800);
+      filterSlider.value = randomCutoff;
+      filterSlider.dispatchEvent(new Event("input"));
+
+      triggerHarmonicNote(0);
+    });
+
+    // Global Keyboard Shortcut Support
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        document.getElementById("toggle-gen-btn").click();
+      }
+
+      // Keys 1 through 7 for triggering notes
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 7) {
+        triggerHarmonicNote(num - 1);
+      }
+    });
+  </script>
+</body>
+</html>
