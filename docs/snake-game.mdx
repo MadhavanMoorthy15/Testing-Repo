@@ -1,0 +1,215 @@
+---
+title: Snake Game Source Guide
+description: A walk through the retro Snake game in snake-game/, from the game hook to the rendered board.
+---
+
+export function Callout({ kind = 'note', children }) {
+  return (
+    <aside className={`callout callout--${kind}`}>
+      <span className="callout__label">{kind}</span>
+      {children}
+    </aside>
+  )
+}
+
+# Snake Game Source Guide
+
+The `snake-game/` folder holds a retro Snake game built with React, TypeScript, and Vite. The whole game runs from one hook, `useSnakeGame`, and the rest of the app renders what that hook returns.
+
+## Project layout
+
+| File | Responsibility |
+| --- | --- |
+| `src/useSnakeGame.ts` | Holds all game state and runs the game loop |
+| `src/App.tsx` | Renders the scoreboard, overlays, and control buttons |
+| `src/GameBoard.tsx` | Draws the grid, the food, and the snake segments |
+| `src/DPad.tsx` | Touch controls for mobile screens |
+| `src/constants.ts` | Grid size, cell size, speed, and scoring values |
+| `src/types.ts` | The `Direction`, `Point`, and `GameStatus` types |
+
+## Game state
+
+The hook returns one object that holds the state and the actions that change it.
+
+```ts
+export interface SnakeGameState {
+  snake: Point[];
+  food: Point;
+  direction: Direction;
+  status: GameStatus;
+  score: number;
+  highScore: number;
+  speed: number;
+}
+```
+
+`status` moves through four values. `IDLE` waits for the player, `RUNNING` advances the tick, `PAUSED` freezes the board, and `GAME_OVER` shows the final score.
+
+```ts
+export type GameStatus = 'IDLE' | 'RUNNING' | 'PAUSED' | 'GAME_OVER';
+```
+
+<Callout kind="note">
+The hook keeps a `ref` beside every piece of state it reads inside the interval callback. The refs give the callback current values without restarting the interval on every render.
+</Callout>
+
+## The game loop
+
+A single `setInterval` drives the game. The effect starts the interval only while the status is `RUNNING`, and it clears the timer on every other status.
+
+```ts
+useEffect(() => {
+  if (status === 'RUNNING') {
+    intervalRef.current = setInterval(tick, speed);
+  } else {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }
+  return () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  };
+}, [status, speed, tick]);
+```
+
+Each tick does four things in order:
+
+1. Apply the direction the player queued since the last tick.
+2. Move the head one cell in that direction.
+3. Stop the game if the head hit a wall or the body.
+4. Score the food and place the next one if the head landed on it.
+
+## Movement rules
+
+A queued direction is ignored when it points straight back at the snake. Without this check the snake could reverse into its own neck on a single key press.
+
+```ts
+const opposites: Record<Direction, Direction> = {
+  UP: 'DOWN',
+  DOWN: 'UP',
+  LEFT: 'RIGHT',
+  RIGHT: 'LEFT',
+};
+const current = pendingDirRef.current ?? directionRef.current;
+if (newDir !== opposites[current]) {
+  pendingDirRef.current = newDir;
+}
+```
+
+The queued direction lives in `pendingDirRef` instead of being applied at once. That lets the player press two keys inside one tick and still turn correctly, because the second press is checked against the first.
+
+## Collision rules
+
+Two collisions end the game.
+
+The wall check compares the new head against the grid bounds.
+
+```ts
+if (
+  newHead.x < 0 ||
+  newHead.x >= GRID_SIZE ||
+  newHead.y < 0 ||
+  newHead.y >= GRID_SIZE
+) {
+  gameOver();
+  return;
+}
+```
+
+The self collision check skips the last segment, because the tail moves away before the head arrives.
+
+```ts
+const body = currentSnake.slice(0, -1);
+if (body.some((p) => p.x === newHead.x && p.y === newHead.y)) {
+  gameOver();
+  return;
+}
+```
+
+<Callout kind="warning">
+Skipping the tail works only while the snake keeps its length. After a meal the tail stays in place, so the head can reach the cell it just grew into. The check drops the tail in both cases, so the snake can pass through its own tail on the tick right after it eats.
+</Callout>
+
+## Scoring and speed
+
+Each meal adds 10 points. Every five meals the interval drops by 25 ms, and it never falls below 60 ms between ticks.
+
+```ts
+export const GRID_SIZE = 20;       // number of cells per row/column
+export const CELL_SIZE = 24;       // pixels per cell
+export const INITIAL_SPEED = 150;  // ms between ticks
+export const SPEED_INCREMENT = 5;  // ms reduction per 5 points
+export const MIN_SPEED = 60;       // ms floor
+export const POINTS_PER_FOOD = 10;
+```
+
+The high score is stored in `localStorage` under the key `snakeHighScore`, and it is read once when the hook first runs.
+
+```ts
+const [highScore, setHighScore] = useState(() => {
+  const stored = localStorage.getItem('snakeHighScore');
+  return stored ? parseInt(stored, 10) : 0;
+});
+```
+
+## Controls
+
+The keyboard handler and the touch pad both call the same `changeDirection` action.
+
+| Input | Action |
+| --- | --- |
+| Arrow keys or `W`, `A`, `S`, `D` | Change direction |
+| Space or Escape | Start the game, pause it, or resume it |
+| On-screen D-pad | Change direction on touch devices |
+
+The `DPad` component fires on `onPointerDown` and calls `preventDefault`, so the browser does not scroll the page while the player holds a direction.
+
+## Rendering the board
+
+`GameBoard` draws only the food and the snake. The grid lines come from a CSS background on the board itself, so the number of DOM nodes stays proportional to the snake length and not to the grid size.
+
+```tsx
+const boardPx = GRID_SIZE * CELL_SIZE;
+
+<div
+  className="game-board"
+  style={{ width: boardPx, height: boardPx }}
+  role="img"
+  aria-label="Snake game board"
+>
+```
+
+Each segment is positioned with its grid coordinates multiplied by `CELL_SIZE`. The first segment in the array is the head, and the last one is the tail.
+
+```tsx
+{snake.map((p, i) => {
+  const key = `${p.x},${p.y}-${i}`;
+  const isHead = i === 0;
+  const isTail = i === snake.length - 1;
+  return (
+    <div
+      key={key}
+      className={`cell snake-segment ${isHead ? 'snake-head' : ''} ${isTail ? 'snake-tail' : ''}`}
+      style={{
+        left: p.x * CELL_SIZE,
+        top: p.y * CELL_SIZE,
+        width: CELL_SIZE,
+        height: CELL_SIZE,
+      }}
+    />
+  );
+})}
+```
+
+## Field reference
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `snake` | `Point[]` | Every segment, ordered from head to tail. |
+| `food` | `Point` | The cell the snake needs to reach to score. |
+| `direction` | `Direction` | The direction applied on the current tick. |
+| `status` | `GameStatus` | Controls the overlay and whether the interval runs. |
+| `score` | `number` | Points for this session, reset by `reset()`. |
+| `highScore` | `number` | Best score across sessions, kept in `localStorage`. |
+| `speed` | `number` | Milliseconds between ticks, from 150 down to 60. |
