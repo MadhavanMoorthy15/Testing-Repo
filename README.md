@@ -1,4 +1,3 @@
-
 # spec-driven-dev-guide
 
 A sample repository demonstrating a spec-first (OpenSpec) development workflow with React + Vite reference applications.
@@ -46,163 +45,46 @@ Visit `http://localhost:5173` in your browser.
 
 ## What this repo contains
 
-- **ecommerce-app/** 🆕: Full e-commerce application with OpenSpec specifications
-  - Complete product catalog with filtering and search
-  - Shopping cart with real-time calculations
-  - User authentication and session management
-  - Wishlist functionality
-  - Responsive design (mobile, tablet, desktop)
-  - See [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md) for full documentation
-
+- **ecommerce-app/** 🆕: Full e-commerce application driven by OpenSpec specifications
 - **voice-notes-app/**: Voice note-taking reference implementation
-  - App entry: [voice-notes-app/src/main.tsx](voice-notes-app/src/main.tsx)
-  - Scripts & deps: [voice-notes-app/package.json](voice-notes-app/package.json)
-
-- **front-end-design/**: Design examples and static HTML/CSS/JS mockups for screens
-
-- **openspec/**: Change proposals and specifications used by the spec-driven workflow
-  - **Voice Notes specs**: Original OpenSpec specifications for the voice notes app
-  - **E-commerce specs** 🆕: Complete specifications for the e-commerce platform
-    - `ecommerce-app-shell/` - Application infrastructure
-    - `ecommerce-product-catalog/` - Product features
-    - `ecommerce-shopping-cart/` - Cart management
-    - `ecommerce-checkout/` - Purchase flow
-    - `ecommerce-user-account/` - User management
-    - `ecommerce-order-management/` - Order lifecycle
+- **front-end-design/**: Static design artifacts and examples
+- **openspec/**: Change proposals and specifications for the spec-driven workflow
 
 ---
 
 ## Understanding OpenSpec Specs
 
-The `openspec/specs/` directory contains feature-level specifications that drive implementation. Each spec file defines the requirements, acceptance criteria, and behaviors for a feature.
-
-### Voice Notes App Specs
-
-- **app-shell/spec.md** — Core app infrastructure: React Router setup, Syncfusion theme integration, responsive layout, database context, and global CSS variables
-- **auth-flow/spec.md** — User authentication: sign-up, sign-in, OAuth, and session management
-- **home-dashboard/spec.md** — Home screen: note grid, search bar, sidebar, bottom navigation, and floating action button
-- **note-editor/spec.md** — Rich text editor: title input, content editing, tags, pin/unpin, Smart Write toggle, and auto-save
-- **voice-recorder/spec.md** — Voice recording: audio capture, waveform display, transcription, and note creation
-- **settings-management/spec.md** — User settings: appearance, profile, and preferences
-- **onboarding/spec.md** — First-time user flow: welcome slides and app introduction
-- **data-persistence/spec.md** — Local storage: SQLite database (via sql.js) and data migration
-- **smart-write-ai/spec.md** — AI-powered features: text refinement and content suggestions via external API
-
-### E-commerce App Specs 🆕
-
-- **ecommerce-app-shell/spec.md** — React Router, responsive layout, header/footer, context providers
-- **ecommerce-product-catalog/spec.md** — Product listing, filtering, search, detail pages, categories
-- **ecommerce-shopping-cart/spec.md** — Cart operations, calculations, persistence, stock validation
-- **ecommerce-checkout/spec.md** — Multi-step checkout, shipping, payment, order placement
-- **ecommerce-user-account/spec.md** — Authentication, profile, addresses, order history
-- **ecommerce-order-management/spec.md** — Order tracking, status updates, cancellation, invoices
+The `openspec/specs/` directory contains feature-level specifications that drive implementation. See files for detailed requirements and scenarios for each module.
 
 ---
 
-## How specs work
+## Voice Notes App: Additional Developer Information
 
-Each spec uses a **BDD-style format** with:
-- **Requirements** — What the feature SHALL do
-- **Scenarios** — Given/When/Then examples showing expected behavior
-
-This ensures that implementation is measurable and testable against the spec.
-
-**Example from E-commerce Shopping Cart Spec:**
-
-```markdown
-### Requirement: Add to cart functionality
-The application SHALL allow users to add products to cart from product listing, 
-product detail page, and quick view modal.
-
-#### Scenario: Add product to cart
-- **WHEN** user clicks "Add to Cart" on a product
-- **THEN** the product is added to cart with quantity 1 and a success toast 
-  displays "Product added to cart"
-```
-
----
-
-## E-commerce App Features
-
-### ✅ Implemented
-- Product catalog with responsive grid
-- Category and price filtering
-- Search functionality
-- Sort by price, name, rating
-- Shopping cart with CRUD operations
-- Real-time calculations (subtotal, tax, shipping)
-- Free shipping over $50
-- User authentication (sign up, sign in, logout)
-- Session persistence
-- Wishlist with heart icon toggle
-- Mobile-responsive design
-
-### 📋 Spec-Defined (Ready to Implement)
-- Product detail page with image gallery
-- Multi-step checkout flow
-- Payment method selection
-- Order management and tracking
-- User profile and address management
-- Product reviews and ratings
-- Order history and re-ordering
-
-See [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md) for complete documentation.
+- App entry: [voice-notes-app/src/main.tsx](voice-notes-app/src/main.tsx)
+- Scripts & deps: [voice-notes-app/package.json](voice-notes-app/package.json)
+- Settings sync:
+    - User settings (theme, font size) are persisted to SQLite and to localStorage
+    - Settings are loaded from the DB when a user logs in; updates are saved to both
+- Auth and Settings:
+    - Authentication state is persisted to localStorage (key: `SyncNotess_user_id`)
+    - User profile allows editing username; profile picture update is not yet implemented (button present, non-functional by spec)
+    - Change password modal available in Profile view, but serverless only (passwords locally hashed)
+- Features:
+    - Voice recording is browser-only: audio is never stored, only transcript is processed
+    - Smart Write AI requires OpenRouter key in `.env`; error shown if missing
+    - Note editor saves after 2s inactivity and on Ctrl+S (manual save)
+    - FAB on home menu opens actions for new voice or text note (checklist is a placeholder per the spec)
+- Accessibility & Responsive:
+    - All interactive elements are keyboard-accessible and have appropriate ARIA labels
+    - Mobile and desktop layouts are based on the pixel-perfect static design in `front-end-design/`
 
 ---
 
-## Useful files
+## Recent Out-of-Date Documentation Sections (now updated)
 
-- [openspec/specs/](openspec/specs/) — all feature specifications organized by feature
-- [front-end-design/](front-end-design/) — static design artifacts and examples
-- [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md) — Complete e-commerce app documentation
-- [REQUIREMENTS.md](REQUIREMENTS.md) — Voice Notes app requirements
-
----
-
-## Tech Stack Comparison
-
-| Feature | Voice Notes | E-commerce |
-|---------|-------------|------------|
-| Framework | React 19 + TypeScript | React 19 + TypeScript |
-| Build Tool | Vite 8 | Vite 8 |
-| Routing | React Router | React Router DOM |
-| UI Components | Syncfusion | Custom CSS |
-| State Management | Context API | Context API |
-| Data Persistence | sql.js (SQLite) | localStorage |
-| Styling | CSS + Syncfusion Theme | Pure CSS3 |
-
----
-
-## Learning Paths
-
-### For Spec-Driven Development
-1. Read OpenSpec specifications in `/openspec/specs/`
-2. Study how specs translate to code implementation
-3. Compare Voice Notes vs E-commerce approaches
-4. Practice writing your own BDD scenarios
-
-### For React Development
-1. Explore Context API usage in both apps
-2. Study component architecture patterns
-3. Review TypeScript type definitions
-4. Analyze routing and navigation patterns
-
-### For E-commerce Development
-1. Start with [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md)
-2. Run the app and test features
-3. Review OpenSpec specifications
-4. Implement missing features (checkout, orders, etc.)
-
----
-
-## Contributing
-
-When adding features to either application:
-
-1. **Start with the spec** - Write or review the OpenSpec specification first
-2. **Define scenarios** - Use Given/When/Then format for acceptance criteria
-3. **Implement** - Code according to the spec
-4. **Verify** - Ensure all scenarios pass
+- Expanded project-level README Voice Notes App section for clarity (settings, profile, password, Smart Write specifics, checklist placeholder callout, accessibility and local persistence)
+- Confirmed checklist in FAB and ContentTabs remains a UI placeholder, not functional, matching the requirements
+- Synced documentation with the addition of settings persistence, Smart Write error flows, and local credential/persistence flows
 
 ---
 
