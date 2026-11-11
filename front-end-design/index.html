@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1e8">
+  <title>Little Moments — Daily journal</title>
+  <style>
+    :root { color-scheme: light; --ink: #23271f; --muted: #76796d; --paper: #f4f1e8; --green: #335846; --line: #dedbcf; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--paper); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; }
+    .page { width: min(1040px, calc(100% - 48px)); margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 28px 0; border-bottom: 1px solid var(--line); font: 13px/1.4 Arial, sans-serif; }
+    .brand { font: bold 15px Arial, sans-serif; letter-spacing: .04em; }
+    .brand span { color: var(--green); }
+    .date { color: var(--muted); }
+    main { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(42px, 9vw, 112px); padding: clamp(56px, 10vh, 100px) 0 80px; align-items: start; }
+    .eyebrow { margin: 0 0 22px; color: var(--green); font: 700 11px Arial, sans-serif; letter-spacing: .19em; text-transform: uppercase; }
+    h1 { max-width: 620px; margin: 0; font-size: clamp(54px, 8vw, 92px); font-weight: 400; letter-spacing: -.065em; line-height: .98; }
+    h1 em { color: var(--green); font-weight: 400; }
+    .intro { max-width: 420px; margin: 28px 0 0; color: #66685e; font-size: 18px; line-height: 1.65; }
+    .entry { margin-top: 48px; }
+    label { display: block; margin-bottom: 12px; font: 700 11px Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+    textarea { display: block; width: 100%; min-height: 150px; resize: vertical; border: 1px solid var(--line); border-radius: 3px; padding: 16px; background: #faf9f4; color: var(--ink); font: 16px/1.6 Georgia, serif; outline-color: var(--green); }
+    button { margin-top: 14px; border: 0; border-radius: 2px; padding: 14px 20px; background: var(--green); color: white; cursor: pointer; font: 700 11px Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; transition: background .2s, transform .2s; }
+    button:hover { background: #263f32; transform: translateY(-1px); }
+    .side { border-top: 2px solid var(--ink); padding-top: 17px; }
+    .side h2 { margin: 0 0 26px; font-size: 24px; font-weight: 400; }
+    .prompt { padding: 20px 0; border-top: 1px solid var(--line); }
+    .prompt small { color: var(--green); font: 700 10px Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+    .prompt p { margin: 9px 0 0; font-size: 18px; line-height: 1.4; }
+    .saved { margin: 14px 0 0; min-height: 22px; color: var(--green); font: 13px Arial, sans-serif; }
+    footer { padding: 18px 0 30px; border-top: 1px solid var(--line); color: var(--muted); font: 12px Arial, sans-serif; }
+    @media (max-width: 700px) { .page { width: min(100% - 36px, 560px); } main { grid-template-columns: 1fr; gap: 54px; padding-top: 56px; } header { padding: 20px 0; } .intro { font-size: 16px; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header><div class="brand"><span>◒</span> LITTLE MOMENTS</div><div class="date" id="date"></div></header>
+    <main>
+      <section aria-labelledby="title">
+        <p class="eyebrow">A small pause in your day</p>
+        <h1 id="title">Make room<br>for <em>today.</em></h1>
+        <p class="intro">A gentle place to notice what’s here. No perfect words needed—just a moment that belongs to you.</p>
+        <form class="entry" id="entry-form">
+          <label for="thought">What’s on your mind?</label>
+          <textarea id="thought" placeholder="A little thing I want to remember…" required></textarea>
+          <button type="submit">Keep this moment&nbsp; ↗</button>
+          <p class="saved" id="saved" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <aside class="side" aria-label="Writing prompts">
+        <h2>A thought to begin with</h2>
+        <div class="prompt"><small>Look closer</small><p>What felt softer or brighter than you expected today?</p></div>
+        <div class="prompt"><small>Give thanks</small><p>Who made an ordinary moment feel a little less ordinary?</p></div>
+        <div class="prompt"><small>Let go</small><p>What can you leave unfinished until tomorrow?</p></div>
+      </aside>
+    </main>
+    <footer>One page at a time. One moment at a time.</footer>
+  </div>
+  <script>
+    const date = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    document.querySelector('#date').textContent = date.format(new Date());
+    document.querySelector('#entry-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const thought = document.querySelector('#thought');
+      try { localStorage.setItem('little-moments-entry', thought.value); } catch {}
+      document.querySelector('#saved').textContent = 'Your moment is saved in this browser. Be well.';
+      thought.value = '';
+    });
+    try {
+      const previous = localStorage.getItem('little-moments-entry');
+      if (previous) document.querySelector('#thought').value = previous;
+    } catch {}
+  </script>
+</body>
+</html>
