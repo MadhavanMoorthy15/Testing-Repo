@@ -5,7 +5,7 @@ A sample repository demonstrating a spec-first (OpenSpec) development workflow w
 
 ## 🎯 Reference Applications
 
-This repository contains **two complete reference applications** built using the OpenSpec spec-driven workflow:
+This repository contains **three complete reference applications** built using the OpenSpec spec-driven workflow:
 
 ### 1. Voice Notes App
 A voice note-taking application with AI enhancement features, SQLite persistence, and rich text editing.
@@ -17,6 +17,11 @@ A full-featured online shopping platform with product catalog, shopping cart, wi
 - **Location**: `/ecommerce-app/`
 - **Tech**: React + Vite + TypeScript + React Router
 - **Documentation**: [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md)
+
+### 3. Calculator App (Calc)
+A keyboard-friendly pocket calculator with calculation history, reusable results, and three selectable themes.
+- **Location**: `/calculator/`
+- **Tech**: React + Vite + TypeScript + Vitest
 
 ---
 
@@ -40,6 +45,14 @@ npm install
 npm run dev
 ```
 
+### Calculator App (Calc)
+
+```bash
+cd calculator
+npm install
+npm run dev
+```
+
 Visit `http://localhost:5173` in your browser.
 
 ---
@@ -57,6 +70,11 @@ Visit `http://localhost:5173` in your browser.
 - **voice-notes-app/**: Voice note-taking reference implementation
   - App entry: [voice-notes-app/src/main.tsx](voice-notes-app/src/main.tsx)
   - Scripts & deps: [voice-notes-app/package.json](voice-notes-app/package.json)
+
+- **calculator/**: Pocket calculator reference implementation
+  - App entry: [calculator/src/main.tsx](calculator/src/main.tsx)
+  - Component: [calculator/src/Calculator.tsx](calculator/src/Calculator.tsx)
+  - Scripts & deps: [calculator/package.json](calculator/package.json)
 
 - **front-end-design/**: Design examples and static HTML/CSS/JS mockups for screens
 
