@@ -1,0 +1,13 @@
+{
+  "name": "testing-repo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reference applications and skills for building React apps with a spec-driven workflow.",
+  "scripts": {
+    "check:skills": "node .boldcreate/skills/yaml-skill-frontmatter/scripts/check-skills.mjs"
+  },
+  "devDependencies": {
+    "yaml": "^2.8.4"
+  }
+}
