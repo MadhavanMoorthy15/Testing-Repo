@@ -153,9 +153,45 @@ See [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md) for complete documentation.
 ## Useful files
 
 - [openspec/specs/](openspec/specs/) — all feature specifications organized by feature
+- [.boldcreate/skills/](.boldcreate/skills/) — the skills that guide building an app here
 - [front-end-design/](front-end-design/) — static design artifacts and examples
 - [ECOMMERCE_PROJECT.md](ECOMMERCE_PROJECT.md) — Complete e-commerce app documentation
 - [REQUIREMENTS.md](REQUIREMENTS.md) — Voice Notes app requirements
+
+---
+
+## Skills
+
+The skills in [.boldcreate/skills/](.boldcreate/skills/) tell an agent how to build an app in
+this repository. Each one is a folder with a `SKILL.md` in it.
+
+Start with `app-building-guide`, which holds the map and the order of the rest.
+
+| Skill | What it does |
+|---|---|
+| `app-building-guide` | The map of the skills and the order to use them |
+| `build-react-app` | Scaffolds a new React and TypeScript app |
+| `spec-driven-feature` | Builds a feature from a requirement and its scenarios |
+| `react-component-ui` | Builds components with the tokens and the CSS modules |
+| `react-state-context` | Shares state through a provider |
+| `data-persistence-layer` | Stores data in SQLite and reads it through a repository |
+| `react-routing-pages` | Adds routes, pages and protected routes |
+| `api-service-client` | Calls a network API from a service module |
+| `local-storage-session` | Keeps the session and the preferences between sessions |
+| `responsive-app-shell` | Builds the header, the sidebar and the bottom navigation |
+| `app-testing-vitest` | Writes the test for each scenario and runs the suite |
+
+The `yaml-*` skills cover the frontmatter of a `SKILL.md` itself: one broken header each,
+and what to do about it. `yaml-skill-frontmatter` explains the rules and holds a checker
+for them.
+
+Check every skill against the loader's rules:
+
+```bash
+npm install
+npm run check:skills
+```
+
 
 ---
 
